@@ -1,16 +1,17 @@
 import ast
 
-REPEATS_NUM = 5 
+REPEATS_NUM = 2 # was 5
 
 import json
 # import traceback
+import sys
 import numpy as np
 import math
-import utilss as utils
+import utilss as utilss
 from collections import Counter
 from sklearn.metrics import silhouette_score
 
-MAX_ITERATION = 5 # changed it from 30 
+MAX_ITERATION = 2 # changed it from 30 
 
 
 def custom_sort(obj, frequencies):
@@ -61,6 +62,7 @@ class KMeansClusterer:
         self.average_dist_between_clusters = 0
 
     def createClusterJson(self):
+        print("in createClusterJson")
         jsonData = {
             "wcss": self._wcss,
             "silhouette": self.silhouette,
@@ -82,6 +84,7 @@ class KMeansClusterer:
         jsonData['cluster_values'] = self._clusters_info
         jsonData['hyperParams'] = self._hyper_parameters
         self._model_json_info = jsonData
+        print(jsonData)
 
     def getModelData(self):
         return self._model_json_info
@@ -390,7 +393,6 @@ class KMeansClusterer:
 
     # cluster the data given to kmeans
     def cluster_vectorspace(self, vectors):
-        print("in cluster_vectorspace")
         meanss = []
         wcsss = []
         best_clusters = []
@@ -401,7 +403,8 @@ class KMeansClusterer:
             #   print("kmeans cluster_vectorspace, doing repeats", trial)
             # generate new means
             try:
-                self._means = utils.mean_generator(self._num_means, vectors)
+                self._means = utilss.mean_generator(self._num_means, vectors)
+                print(self._means)
                 # cluster the vectors to the given means
                 try:
                     self._cluster_vectorspace(vectors)
@@ -413,7 +416,7 @@ class KMeansClusterer:
                     # exit()
                     print("problem generating, trying again")
                     #  exit() #nooo
-                    self._means = utils.mean_generator(self._num_means, vectors)
+                    self._means = utilss.mean_generator(self._num_means, vectors)
                     continue
                 # add the new means each time
                 meanss.append(self._means)
@@ -451,6 +454,7 @@ class KMeansClusterer:
 
     # cluster for specific mean values
     def _cluster_vectorspace(self, vectors):
+        print("in _cluster_vectorspace")
         if self._num_means < len(vectors):
             # max iteration if there is no conversion
             current_iteration = 0
@@ -487,8 +491,8 @@ class KMeansClusterer:
                     converged = True
 
             self._clusters_info = clusters
-            # self.createClusterJson()
-            # print ('cluster means: ', self._means)
+            self.createClusterJson()
+            print ('cluster means: ', self._means)
         else:
             print("erorr!!!!")
             pass  # todo: return error here
