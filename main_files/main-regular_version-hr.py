@@ -12,7 +12,7 @@
 
 
 import sys
-sys.path.append("../TalentAI-dana's code-new")
+sys.path.append("../TalentAI-research-new")
 sys.path.append("C:/Users/adler/AppData/Local/Programs/Python/Python311/Lib/site-packages")
 
 from general_algos.Preprocess_for_hr import preProcess, KMeansClusterer
@@ -79,31 +79,31 @@ train_vectors, test_vectors = train_test_split(vectors, test_size=0.20, random_s
 
 # ######################## training ########################
 
-# # train_vectors = train_df.values 
+# train_vectors = train_df.values 
 
-# hp, k = preProcess(train_vectors, types_list, Statistic_intersection, 9, 9)
-# # in order to run this you need to comment out the part that refers to one hot vector in kmeansclusterer
+hp, k = preProcess(train_vectors, types_list, Statistic_intersection, 9, 9)
+# in order to run this you need to comment out the part that refers to one hot vector in kmeansclusterer
 
-# print("making model of dot for train data")
-# model = KMeansClusterer(num_means=k,
-#                         distance=Statistic_intersection,
-#                         repeats=1,
-#                         type_of_fields=types_list,
-#                         hyper_params=hp)
+print("making model of dot for train data")
+model = KMeansClusterer(num_means=k,
+                        distance=Statistic_intersection,
+                        repeats=1,
+                        type_of_fields=types_list,
+                        hyper_params=hp)
 
-# print("done initializing model with KMeansClusterer class")
+print("done initializing model with KMeansClusterer class")
 
-# # print(hp["list_freq_dict"])
+# print(hp["list_freq_dict"])
 
-# model.cluster_vectorspace(train_vectors)
+model.cluster_vectorspace(train_vectors)
 
-# print("done making model")
+print("done making model")
 
-# # model.calc_min_max_dist(vectors)
-# model.get_wcss()
-# model.calc_distance_between_clusters()
+# model.calc_min_max_dist(vectors)
+model.get_wcss()
+model.calc_distance_between_clusters()
 
-# train_results = model.getModelData()
+train_results = model.getModelData()
 
 # exit()
 
@@ -137,38 +137,38 @@ test_results = model.getModelData()
 
 ################# Saving Results and Analysis #################
 
-# writer = pd.ExcelWriter('clustering_results.xlsx', engine='openpyxl')
+writer = pd.ExcelWriter('clustering_results.xlsx', engine='openpyxl')
 
-# # Convert results to DataFrame if they're not already, and write to Excel
-# # pd.DataFrame(train_results).to_excel(writer, sheet_name='Training Results')
-# # pd.DataFrame(test_results).to_excel(writer, sheet_name='Testing Results')
+# Convert results to DataFrame if they're not already, and write to Excel
+# pd.DataFrame(train_results).to_excel(writer, sheet_name='Training Results')
+# pd.DataFrame(test_results).to_excel(writer, sheet_name='Testing Results')
 
 print(test_results)
-# writer.save()
+writer._save()
 
-# def write_results_to_excel(filename, train_results, test_results):
-#     workbook = Workbook()
+def write_results_to_excel(filename, train_results, test_results):
+    workbook = Workbook()
     
-#     # Write training results
-#     train_sheet = workbook.create_sheet("Training Results")
-#     for i, row in enumerate(train_results):
-#         for j, val in enumerate(row):
-#             cell = train_sheet.cell(row=i+1, column=j+1)
-#             cell.value = val
+    # Write training results
+    train_sheet = workbook.create_sheet("Training Results")
+    for i, row in enumerate(train_results):
+        for j, val in enumerate(row):
+            cell = train_sheet.cell(row=i+1, column=j+1)
+            cell.value = val
     
-#     # Write testing results
-#     test_sheet = workbook.create_sheet("Testing Results")
-#     for i, row in enumerate(test_results):
-#         for j, val in enumerate(row):
-#             cell = test_sheet.cell(row=i+1, column=j+1)
-#             cell.value = val
+    # Write testing results
+    test_sheet = workbook.create_sheet("Testing Results")
+    for i, row in enumerate(test_results):
+        for j, val in enumerate(row):
+            cell = test_sheet.cell(row=i+1, column=j+1)
+            cell.value = val
     
-#     # Save the workbook
-#     workbook.save(filename)
-#     print(f"Results saved successfully to {filename}")
+    # Save the workbook
+    workbook.save(filename)
+    print(f"Results saved successfully to {filename}")
 
-# # Call the function to save results
-# write_results_to_excel('clustering_results.xlsx', train_results, test_results)
+# Call the function to save results
+write_results_to_excel('clustering_results.xlsx', train_results, test_results)
 
 # ################ Comparative Analysis #################
 

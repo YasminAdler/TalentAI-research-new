@@ -404,7 +404,6 @@ class KMeansClusterer:
             # generate new means
             try:
                 self._means = utilss.mean_generator(self._num_means, vectors)
-                print(self._means)
                 # cluster the vectors to the given means
                 try:
                     self._cluster_vectorspace(vectors)
@@ -486,16 +485,16 @@ class KMeansClusterer:
                 difference = self._sum_distances(self._means, new_means)
                 # remember the new means
                 self._means = new_means
-
-                if difference < self._max_difference or current_iteration == MAX_ITERATION:
+                
+                # if difference < self._max_difference or current_iteration == MAX_ITERATION:
+                if difference > self._max_difference:
                     converged = True
-
-            self._clusters_info = clusters
-            self.createClusterJson()
-            print ('cluster means: ', self._means)
-        else:
-            print("erorr!!!!")
-            pass  # todo: return error here
+                    self._clusters_info = clusters
+                    # self.createClusterJson()
+                    # print ('cluster means: ', self._means)
+                else:
+                    print("erorr!!!!")
+                    pass  # todo: return error here
 
     def classify_vectorspace(self, vector):
         # finds the closest cluster centroid

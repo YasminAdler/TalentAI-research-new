@@ -5,7 +5,7 @@ import math
 
 
 def Statistic_intersection(u, v, type_values, parameters):
-    print("started statistic")
+    # print("started statistic")
 
     # print(parameters)
     distance = 0
