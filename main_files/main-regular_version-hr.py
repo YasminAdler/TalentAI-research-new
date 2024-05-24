@@ -143,7 +143,7 @@ writer = pd.ExcelWriter('clustering_results.xlsx', engine='openpyxl')
 # pd.DataFrame(train_results).to_excel(writer, sheet_name='Training Results')
 # pd.DataFrame(test_results).to_excel(writer, sheet_name='Testing Results')
 
-print(test_results)
+print(train_results, test_results)
 writer._save()
 
 def write_results_to_excel(filename, train_results, test_results):

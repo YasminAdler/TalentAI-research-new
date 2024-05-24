@@ -1,6 +1,6 @@
 import ast
 
-REPEATS_NUM = 2 # was 5
+REPEATS_NUM = 5
 
 import json
 # import traceback
@@ -63,28 +63,42 @@ class KMeansClusterer:
 
     def createClusterJson(self):
         print("in createClusterJson")
-        jsonData = {
-            "wcss": self._wcss,
-            "silhouette": self.silhouette,
-        }
-        listObj = []
-        for i in range(len(self._means)):
-            listObj.append(
-                {
-                    "cluster": i,
-                    "mean": self._means[i].tolist(),
-                    "averageDistance": self.clustersAverageDistance[i],
-                    "maxDistance": self.clustersMaxDistances[i],
-                    "stdDev": self.clustersStdDev[i],
-                    "attributesAverageDistances": self.attributesAverageDistances[i],
-                    "attributesStdDevs": self.attributesStdDevs[i],
-                }
-            )
-        jsonData['clusters_info'] = listObj
-        jsonData['cluster_values'] = self._clusters_info
-        jsonData['hyperParams'] = self._hyper_parameters
-        self._model_json_info = jsonData
-        print(jsonData)
+        try:
+            assert self.silhouette is not None, "silhouette is None"
+            assert self._means is not None, "_means is None"
+            assert self.clustersAverageDistance is not None, "clustersAverageDistance is None"
+            assert self.clustersMaxDistances is not None, "clustersMaxDistances is None"
+            assert self.clustersStdDev is not None, "clustersStdDev is None"
+            assert self.attributesAverageDistances is not None, "attributesAverageDistances is None"
+            assert self.attributesStdDevs is not None, "attributesStdDevs is None"
+            assert self._clusters_info is not None, "_clusters_info is None"
+            assert self._hyper_parameters is not None, "_hyper_parameters is None"
+
+            jsonData = {
+                "wcss": self._wcss if self._wcss is not None else 0,
+                "silhouette": self.silhouette,
+            }
+            listObj = []
+            for i in range(len(self._means)):
+                listObj.append(
+                    {
+                        "cluster": i,
+                        "mean": self._means[i].tolist(),
+                        "averageDistance": self.clustersAverageDistance[i],
+                        "maxDistance": self.clustersMaxDistances[i],
+                        "stdDev": self.clustersStdDev[i],
+                        "attributesAverageDistances": self.attributesAverageDistances[i],
+                        "attributesStdDevs": self.attributesStdDevs[i],
+                    }
+                )
+            jsonData['clusters_info'] = listObj
+            jsonData['cluster_values'] = self._clusters_info
+            jsonData['hyperParams'] = self._hyper_parameters
+            self._model_json_info = jsonData
+            # print(jsonData)
+        except AssertionError as e:
+            print(f"AssertionError: {e}")
+
 
     def getModelData(self):
         return self._model_json_info
@@ -125,7 +139,7 @@ class KMeansClusterer:
 
                 if self._type_of_fields[ind] == "list":
 
-    ############################ this version is for hamming talentai method ############################
+    ############################ this version is for hamming talentai method (האמינג סדר מקורי) ############################
 
                     # lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]
                     #
@@ -177,7 +191,7 @@ class KMeansClusterer:
                     data = most_common_values
 
 
-  ############################ this version is for list frequency ############################
+  ############################ this version is for list frequency (איראנים רשימה) ############################
                     # avg_length = self._hyper_parameters["avg_list_len"][ind]
                     # # extract lists
                     # lists_at_index = [ast.literal_eval(vector[ind]) for vector in cluster]
@@ -413,9 +427,10 @@ class KMeansClusterer:
                     print(e)
                     # print("hello")
                     # exit()
-                    print("problem generating, trying again")
+                    # print("problem generating, trying again")
+                    print("problem generating, continuing the loop")
                     #  exit() #nooo
-                    self._means = utilss.mean_generator(self._num_means, vectors)
+                    # self._means = utilss.mean_generator(self._num_means, vectors)
                     continue
                 # add the new means each time
                 meanss.append(self._means)
@@ -487,11 +502,14 @@ class KMeansClusterer:
                 self._means = new_means
                 
                 # if difference < self._max_difference or current_iteration == MAX_ITERATION:
-                if difference > self._max_difference:
+                if difference > self._max_difference or current_iteration == MAX_ITERATION:
                     converged = True
                     self._clusters_info = clusters
-                    # self.createClusterJson()
-                    # print ('cluster means: ', self._means)
+                    self.metaDataCalculation()
+                    self.calc_distance_between_clusters()
+                    self.wcssCalculate()
+                    self.SilhouetteCalculate()
+                    self.createClusterJson()                    # print ('cluster means: ', self._means)
                 else:
                     print("erorr!!!!")
                     pass  # todo: return error here
