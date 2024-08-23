@@ -1,17 +1,30 @@
 import ast
+import os as os
+import sys as sys
+import logging
 
-REPEATS_NUM = 2 # was 5
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import matplotlib.pyplot as plt
+
+logging.basicConfig(filename='yasmin_error_log.txt', level=logging.ERROR, format='%(asctime)s:%(levelname)s:%(message)s')
+
+
+REPEATS_NUM = 5
 
 import json
 # import traceback
 import sys
 import numpy as np
 import math
-import utilss as utilss
+from main_files.utilss import mean_generator
 from collections import Counter
 from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA # yasmin 
+from sklearn.preprocessing import LabelEncoder # yasmin 
+from main_files.classCluster import * 
 
-MAX_ITERATION = 2 # changed it from 30 
+
+MAX_ITERATION = 30 # Yasmin changed it from 30 to 2
 
 
 def custom_sort(obj, frequencies):
@@ -60,9 +73,10 @@ class KMeansClusterer:
         self.min_dist = 0
         self.max_dist = 0
         self.average_dist_between_clusters = 0
+        self.all_clusters = []
+
 
     def createClusterJson(self):
-        print("in createClusterJson")
         jsonData = {
             "wcss": self._wcss,
             "silhouette": self.silhouette,
@@ -84,7 +98,6 @@ class KMeansClusterer:
         jsonData['cluster_values'] = self._clusters_info
         jsonData['hyperParams'] = self._hyper_parameters
         self._model_json_info = jsonData
-        print(jsonData)
 
     def getModelData(self):
         return self._model_json_info
@@ -125,18 +138,18 @@ class KMeansClusterer:
 
                 if self._type_of_fields[ind] == "list":
 
-    ############################ this version is for hamming talentai method ############################
+                    # ############## this version is for hamming talentai method (סדר מקורי)
 
                     # lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]
-                    #
+                    
                     # # this line is only for hamming sorted
                     # lists_at_ind_index = [sorted(sublist, key=lambda x: self._hyper_parameters["list_freq_dict"][ind].get(x, 0), reverse=True) for sublist
                     #                      in lists_at_ind_index]
-                    #
+                    
                     # padded_data = [lst + ['missing_val'] * (self._hyper_parameters["avg_list_len"][ind] - len(lst)) for
                     #                lst in lists_at_ind_index]
-                    #
-                    #
+                    
+                    # ##### these lines were in comment, yasmin uncommented this for איראנים רשימה #####
                     # transposed_data = zip(*padded_data)
                     # # Initialize the voting list
                     # voting_list = []
@@ -146,7 +159,7 @@ class KMeansClusterer:
                     #     counts = Counter(column)
                     #     # Find the most common values
                     #     most_common_values = counts.most_common(2)
-                    #
+                    
                     #     # Check if the most common value is "missing_val"
                     #     if most_common_values[0][0] == "missing_val":
                     #         if len(most_common_values) >= 2:
@@ -155,15 +168,15 @@ class KMeansClusterer:
                     #             most_common_value = "missing_val"
                     #     else:
                     #         most_common_value = most_common_values[0][0]
-                    #
+                    
                     #     # todo: most common value needs to be a real value, exclude missing vals - done!
                     #     # Append the most common value to the voting list
                     #     voting_list.append(most_common_value)
                     # data = voting_list
 
 
-    ############################ this version is for dot product and intersection ##############
-                  #  Extract lists from the indth index of each vector
+                    ########### this version is for dot product and intersection
+                #    Extract lists from the indth index of each vector
 
                     lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]
 
@@ -176,20 +189,19 @@ class KMeansClusterer:
                     most_common_values = [value for value, count in value_counts.items() if count >= threshold]
                     data = most_common_values
 
-
-  ############################ this version is for list frequency ############################
+                    # ############## this version is for list frequency (איראנים רשימה) #####
                     # avg_length = self._hyper_parameters["avg_list_len"][ind]
                     # # extract lists
                     # lists_at_index = [ast.literal_eval(vector[ind]) for vector in cluster]
-                    #
+                    
                     # # sort all lists
                     # lists_at_index = [sorted(sublist, key=lambda x: self._hyper_parameters["list_freq_dict"][ind].get(x, 0), reverse=True) for sublist
                     #                    in lists_at_index]
                     # # pad data
-                    #
+                    
                     # padded_data = [lst + ['missing_val'] * (self._hyper_parameters["avg_list_len"][ind] - len(lst)) for lst in lists_at_index]
                     # # voting
-                    #
+                    
                     # transposed_data = zip(*padded_data)
                     # # Initialize the voting list
                     # voting_list = []
@@ -199,7 +211,7 @@ class KMeansClusterer:
                     #     counts = Counter(column)
                     #     # Find the most common values
                     #     most_common_values = counts.most_common(2)
-                    #
+                    
                     #     # Check if the most common value is "missing_val"
                     #     if most_common_values[0][0] == "missing_val":
                     #         if len(most_common_values) >= 2:
@@ -208,7 +220,7 @@ class KMeansClusterer:
                     #             most_common_value = "missing_val"
                     #     else:
                     #         most_common_value = most_common_values[0][0]
-                    #
+                    
                     #     # todo: most common value needs to be a real value, exclude missing vals - done!
                     #     # Append the most common value to the voting list
                     #     voting_list.append(most_common_value)
@@ -403,7 +415,7 @@ class KMeansClusterer:
             #   print("kmeans cluster_vectorspace, doing repeats", trial)
             # generate new means
             try:
-                self._means = utilss.mean_generator(self._num_means, vectors)
+                self._means = mean_generator(self._num_means, vectors)
                 # cluster the vectors to the given means
                 try:
                     self._cluster_vectorspace(vectors)
@@ -413,9 +425,10 @@ class KMeansClusterer:
                     print(e)
                     # print("hello")
                     # exit()
-                    print("problem generating, trying again")
+                    # print("problem generating, trying again")
+                    print("problem generating, continuing the loop")
                     #  exit() #nooo
-                    self._means = utilss.mean_generator(self._num_means, vectors)
+                    self._means = mean_generator(self._num_means, vectors)
                     continue
                 # add the new means each time
                 meanss.append(self._means)
@@ -450,10 +463,25 @@ class KMeansClusterer:
 
                     # use the best means
                     self._means = min_means
+                    ## Yasmin added this to create a class of clusters
+                    
+                    
+        self.all_clusters = [Cluster(cluster_id = i,
+                                    mean=self._means[i],
+                                    average_distance=self.clustersAverageDistance,
+                                    max_distance=self.clustersMaxDistances,
+                                    std_dev=self.clustersStdDev,
+                                    attributes_average_distances=self.attributesAverageDistances,
+                                    attributes_std_devs=self.attributesStdDevs,
+                                    data = best_clusters,
+                                    calculator= CustomCentroidCalculator(self._type_of_fields, self._hyper_parameters),
+                                    _distance = self._distance)
+                             for i in range(len(self._means))]
+        
 
     # cluster for specific mean values
     def _cluster_vectorspace(self, vectors):
-        print("in _cluster_vectorspace")
+        # print("in cluster vectorspace")
         if self._num_means < len(vectors):
             # max iteration if there is no conversion
             current_iteration = 0
@@ -461,10 +489,10 @@ class KMeansClusterer:
             converged = False
             while not converged:
                 current_iteration += 1
-                print("current iteration: ", current_iteration)
+                #    print("current iteration: ", current_iteration)
                 # assign the tokens to clusters based on minimum distance to
                 # the cluster means
-                
+
                 clusters = [[] for m in range(self._num_means)]
 
                 for vector in vectors:
@@ -485,16 +513,16 @@ class KMeansClusterer:
                 difference = self._sum_distances(self._means, new_means)
                 # remember the new means
                 self._means = new_means
-                
-                # if difference < self._max_difference or current_iteration == MAX_ITERATION:
-                if difference > self._max_difference:
+
+                if difference < self._max_difference or current_iteration == MAX_ITERATION:
                     converged = True
-                    self._clusters_info = clusters
-                    # self.createClusterJson()
-                    # print ('cluster means: ', self._means)
-                else:
-                    print("erorr!!!!")
-                    pass  # todo: return error here
+
+            self._clusters_info = clusters
+            # self.createClusterJson()
+            # print ('cluster means: ', self._means)
+        else:
+            print("erorr!!!!")
+            pass  # todo: return error here
 
     def classify_vectorspace(self, vector):
         # finds the closest cluster centroid

@@ -8,7 +8,7 @@ import json
 import numpy as np
 import math
 #sys.path.append("..")  # Add parent directory to path
-from .. import utilss as ut
+from ..main_files import utilss as ut
 from collections import Counter
 from sklearn.metrics import silhouette_score
 

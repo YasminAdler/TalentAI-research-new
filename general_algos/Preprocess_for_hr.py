@@ -143,12 +143,12 @@ def preProcess(vectors, fieldsData, distance_function, triesNumber, repeats):
     k = 8 #apply_elbow_method(type_of_fields, vectors, distance_function, triesNumber, repeats, params_dict)
 
 
-    print("started genetic algorithm")
+    # print("started genetic algorithm")
     # hr dataset-  ( 4, 13, 0.07, 0.06)
-    theta1, theta2, betha, gamma =  ( 4, 13, 0.07, 0.06)#genetic_algorithm(params_dict, distance_function, k, vectors, type_of_fields, z)
+    theta1, theta2, betha, gamma =  ( 4, 13, 0.07, 0.06) #genetic_algorithm(params_dict, distance_function, k, vectors, type_of_fields, z)
     print(theta1, theta2, betha, gamma)
     #exit()
-    print("GENETIC COMPLETED AND TOOK:", (datetime.now() - time).seconds, "seconds")
+    # print("GENETIC COMPLETED AND TOOK:", (datetime.now() - time).seconds, "seconds")
 
     params_dict["theta1"] = theta1  # 3
     params_dict["theta2"] = theta2  # 10
