@@ -46,7 +46,7 @@ def apply_elbow_method(fields_data, vectors, distance_function, triesNumber, _re
     for i in range(1,10):
         print("iteration ", i ,"of elbow")
         model = KMeansClusterer(hyper_params=params, distance=distance_function, num_means=int(i),
-                                type_of_fields=fields_data, repeats=5)
+                                type_of_fields=fields_data, repeats=2) ### changed by yasmin from 5to 2
 
         model.cluster_vectorspace(vectors)
         print("yay!",i, model.get_wcss())

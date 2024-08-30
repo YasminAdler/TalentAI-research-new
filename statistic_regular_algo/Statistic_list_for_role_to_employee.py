@@ -2,12 +2,25 @@ import ast
 
 import numpy as np
 import math
+from collections import Counter
 
 ################# change company_index to: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
 
-## if in RoleToEmployee: uncomment this: 
 
-def Statistic_list_frequency(u, v, type_values, parameters, company_index=11):
+def create_test_frequency_dict(vectors, type_of_fields):
+    frequencies_dict = {}
+    
+    for i in range(len(type_of_fields)):
+        if type_of_fields[i] == 'categoric':
+            attribute_column = [vector[i] for vector in vectors]
+            frequencies_dict[str(i)] = dict(Counter(attribute_column))
+        else:
+            frequencies_dict[str(i)] = {}
+
+    return frequencies_dict
+
+
+def Statistic_list_frequency(u, v, type_values, parameters,test_frequencies, company_index=11):
     
     distance = 0
     results = []
@@ -55,13 +68,25 @@ def Statistic_list_frequency(u, v, type_values, parameters, company_index=11):
                         specific_domain_size = parameters["domain sizes"][i]
                         f_v_ak = f_freq(specific_domain_size, theta1, betha, theta2, gamma)
                         
-                        ## This part was changed by yasmin from:
+                        if str(u[i]) not in parameters["frequencies"][str(i)]:
+                            print(f"Key {str(u[i])} not found in frequencies for index {i}")
+                        if str(v[i]) not in parameters["frequencies"][str(i)]:
+                            print(f"Key {str(v[i])} not found in frequencies for index {i}")
+                        
+                        # # This part was changed by yasmin from this:
                         # fr_u = parameters["frequencies"][str(i)][str((u[i]))] if u[i]!="" else 1
                         # fr_v = parameters["frequencies"][str(i)][str((v[i]))] if v[i]!="" else 1
                         
-                        ## to this: 
-                        fr_u = parameters["frequencies"][str(i)].get(str(u[i]), 1)
-                        fr_v = parameters["frequencies"][str(i)].get(str(v[i]), 1)
+
+                        # ## to this: 
+                        # fr_u = parameters["frequencies"][str(i)].get(str(u[i]), 1)
+                        # fr_v = parameters["frequencies"][str(i)].get(str(v[i]), 1)
+
+
+                        fr_u = parameters["frequencies"].get(str(i), {}).get(str(u[i]), test_frequencies.get(str(i), {}).get(str(u[i]), 1))
+                        fr_v = parameters["frequencies"].get(str(i), {}).get(str(v[i]), test_frequencies.get(str(i), {}).get(str(v[i]), 1))
+
+
                         
                         m_fk = parameters["minimum_freq_of_each_attribute"][str(i)]
                         d_fr = (abs(fr_u - fr_v) + m_fk) / max(fr_u, fr_v)

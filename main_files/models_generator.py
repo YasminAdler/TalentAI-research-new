@@ -11,6 +11,12 @@ sys.path.append(os.path.abspath(os.path.join(script_dir, "..")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append("../TalentAI-research-new-last-update")
 sys.path.append("C:/Users/adler/OneDrive/Talent.AI/TalentAI-research-new-last-update/.venv/Lib/site-packages")
+import sys
+import logging
+import os
+import pickle
+import numpy as np
+import csv
 
 from general_algos.Preprocess_for_hr import preProcess, KMeansClusterer
 from utilss import mean_generator
@@ -21,7 +27,6 @@ from statistic_regular_algo.Statistic_intersection import Statistic_intersection
 
 logging.basicConfig(filename="yasmin_error_log.txt", level=logging.ERROR)
 
-# Types list
 types_list = ['categoric', 'categoric', 'categoric', 'categoric', 'numeric',
               'categoric', 'categoric', 'categoric', 'categoric', 'categoric',
               'list', 'categoric', 'categoric', 'categoric', 'list', 'list',
@@ -60,53 +65,37 @@ distance_functions = {
     "Statistic_intersection": Statistic_intersection
 }
 
-def save_to_pickle(data, filename):
-    with open(filename, 'wb') as file:
-        pickle.dump(data, file)
+def process_and_cluster(full_vectors, train_vectors, dataset_option, distance_function, types_list_modified):
+    save_dir = "saved_sets"
+    os.makedirs(save_dir, exist_ok=True)
 
-def create_save_directory(base_dir, dataset_option, distance_function):
-    dir_path = os.path.join(base_dir, f"{dataset_option}_{distance_function}")
-    os.makedirs(dir_path, exist_ok=True)
-    return dir_path
+    print("Preprocessing the full dataset...")
+    hp, k = preProcess(full_vectors, types_list_modified, distance_function, 9, 9)
 
-def load_pickle(filename):
-    with open(filename, 'rb') as file:
-        return pickle.load(file)
-
-def filter_vectors(vectors, types_list):
-    filtered_vectors = []
-    for vector in vectors:
-        filtered_vector = [value for value, type in zip(vector, types_list) if type != '']
-        filtered_vectors.append(filtered_vector)
-    return filtered_vectors
-
-def process_and_cluster(train_vectors, dataset_option, distance_function, types_list_modified):
-    save_dir = create_save_directory("saved_sets", dataset_option, distance_function.__name__)
-
-    # Training
-    hp_train, k = preProcess(train_vectors, types_list_modified, distance_function, 9, 9)
+    print("Clustering the train set...")
     model = KMeansClusterer(
         num_means=k,
         distance=distance_function,
-        repeats=5,
+        repeats=2, ## changed by yasmin from 5 to 2
         type_of_fields=types_list_modified,
-        hyper_params=hp_train,
+        hyper_params=hp,
     )
     model.cluster_vectorspace(train_vectors)
     train_results = model.getModelData()
 
-    # Save training model
-    save_path_train = f"{save_dir}/{dataset_option}_{distance_function.__name__}_train_model.pkl"
+    save_path_train = os.path.join(save_dir, f"{dataset_option}_{distance_function.__name__}_train_model.pkl")
     with open(save_path_train, "wb") as f:
         pickle.dump({
             "train_results": train_results,
             "all_clusters": model.all_clusters,
-            "hp_train": hp_train,
+            "hp": hp,
             "k": k,
-            "model": model
+            "model": model,
+            "type_of_fields": types_list_modified
         }, f)
     print(f"Training model and results saved to {save_path_train}")
-
+    
+    
 def main():
     dataset_options = {
         "with_gender_and_age": types_list,
@@ -129,28 +118,31 @@ def main():
     distance_function_name = list(distance_functions.keys())[distance_choice]
     distance_function = distance_functions[distance_function_name]
 
-    # Load the corresponding dataset
-    file_path = {
-        "gender_no_age": "datasets/train_gender_no_age.csv",
-        "age_no_gender": "datasets/train_age_no_gender.csv",
-        "no_age_no_gender": "datasets/train_no_age_no_gender.csv",
-        "with_gender_and_age": "datasets/train_with_gender_and_age.csv",
-    }.get(dataset_option, None)
+    train_file_path = os.path.join("datasets", f"train_{dataset_option}.csv")
+    full_file_path= os.path.join("datasets", f"full_{dataset_option}.csv")
 
-    if file_path is None:
-        print("Invalid dataset option selected.")
+    if not os.path.exists(train_file_path):
+        print(f"Train file for {dataset_option} not found.")
         sys.exit(1)
-
-    # Load the dataset
-    csv_data = []
-    with open(file_path, "r", encoding="utf-8") as csvfile:
+        
+    if not os.path.exists(full_file_path):
+        print(f"Full file for {dataset_option} not found.")
+        sys.exit(1)
+        
+    train_vectors = []
+    full_vectors = []
+    
+    with open(train_file_path, "r", encoding="utf-8") as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            csv_data.append(row)
+            train_vectors.append(np.array(row, dtype=object))
+            
+    with open(full_file_path, "r", encoding="utf-8") as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            full_vectors.append(np.array(row, dtype=object))
 
-    train_vectors = [np.array(f, dtype=object) for f in csv_data]
-
-    process_and_cluster(train_vectors, dataset_option, distance_function, types_list_modified)
+    process_and_cluster(full_vectors,train_vectors, dataset_option, distance_function, types_list_modified)
 
 if __name__ == "__main__":
     main()

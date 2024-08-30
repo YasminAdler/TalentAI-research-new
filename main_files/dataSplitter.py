@@ -1,78 +1,69 @@
-import pickle
 import os
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import csv
 
-def save_to_pickle(data, filename):
-    with open(filename, 'wb') as file:
-        pickle.dump(data, file)
+class DataSplitter:
+    def __init__(self, dataset_path, save_dir):
+        self.dataset_path = dataset_path
+        self.save_dir = save_dir
+        os.makedirs(save_dir, exist_ok=True)
 
-def load_dataset(file_path):
-    csv_data = []
-    with open(file_path, "r", encoding="utf-8") as csvfile:
-        csvreader = csv.reader(csvfile)
-        for row in csvreader:
-            csv_data.append(row)
-    vectors = [np.array(f, dtype=object) for f in csv_data]
-    return vectors
+        # Define the variations and columns to drop for each
+        self.variations = {
+            "with_gender_and_age": [],
+            "gender_no_age": [4, 5],           # Exclude age and keep gender
+            "age_no_gender": [3],              # Exclude gender and keep age
+            "no_age_no_gender": [3, 4, 5],     # Exclude both age and gender
+        }
 
-def split_and_save_dataset(dataset_path, train_filename, test_filename):
-    vectors = load_dataset(dataset_path)
-    train_vectors, test_vectors = train_test_split(vectors, test_size=0.20, random_state=42)
-    
-    # Create directory if it does not exist
-    os.makedirs(os.path.dirname(train_filename), exist_ok=True)
-    
-    save_to_pickle(train_vectors, train_filename)
-    save_to_pickle(test_vectors, test_filename)
-    print(f"Train and test sets saved to {train_filename} and {test_filename}")
-    return train_vectors, test_vectors
+    def load_dataset(self):
+        """Load the full dataset."""
+        df = pd.read_csv(self.dataset_path, header=None)
+        return df
 
-def save_dataset_variations(df, dataset_dir, prefix):
-    # Define column indices (assuming zero-based indexing)
-    columns_to_keep = list(range(len(df.columns)))  # All column indices initially
+    def save_variation(self, df, prefix, columns_to_drop):
+        """Save the variation of the dataset, dropping specified columns."""
+        df_selected = df.drop(columns=columns_to_drop, axis=1) if columns_to_drop else df.copy()
+        save_path = os.path.join(self.save_dir, f"{prefix}.csv")
+        df_selected.to_csv(save_path, index=False, header=False)
+        print(f"Full dataset with {prefix.replace('_', ' and ')} saved to {save_path}")
+        return df_selected
 
-    # 1. Dataset with age and no gender (exclude columns 4 and 5)
-    columns_to_drop = [4, 5]
-    df_age_no_gender = df.drop(columns_to_drop, axis=1)
-    df_age_no_gender.to_csv(os.path.join(dataset_dir, f"{prefix}_gender_no_age.csv"), index=False, header=False)
-    print("Dataset with age and no gender saved (columns 4 & 5 excluded)")
-    columns_to_keep = [col for col in columns_to_keep if col not in columns_to_drop]  # Update remaining columns
+    def split_and_save(self, df, prefix):
+        """Split the dataset into train and test sets and save them."""
+        train_vectors, test_vectors = train_test_split(df.values, test_size=0.20, random_state=42)
+        
+        # Convert back to DataFrame for saving
+        df_train = pd.DataFrame(train_vectors)
+        df_test = pd.DataFrame(test_vectors)
 
-    # 2. Dataset with gender and no age (exclude column 3)
-    columns_to_drop = [3]
-    df_gender_no_age = df.drop(columns_to_drop, axis=1)
-    df_gender_no_age.to_csv(os.path.join(dataset_dir, f"{prefix}_age_no_gender.csv"), index=False, header=False)
-    print("Dataset with gender and no age saved (column 3 excluded)")
-    columns_to_keep = [col for col in columns_to_keep if col not in columns_to_drop]  # Update remaining columns
+        df_train.to_csv(os.path.join(self.save_dir, f"train_{prefix}.csv"), index=False, header=False)
+        df_test.to_csv(os.path.join(self.save_dir, f"test_{prefix}.csv"), index=False, header=False)
+        print(f"Train and test sets for {prefix.replace('_', ' and ')} saved.")
 
-    # 3. Dataset with no age and no gender (exclude columns 3, 4, and 5)
-    columns_to_drop = [3, 4, 5]
-    df_no_age_no_gender = df.drop(columns_to_drop, axis=1)
-    df_no_age_no_gender.to_csv(os.path.join(dataset_dir, f"{prefix}_no_age_no_gender.csv"), index=False, header=False)
-    print("Dataset with no age and no gender saved (columns 3, 4 & 5 excluded)")
+    def process(self):
+        """Process the dataset: create variations and split into train/test."""
+        # Load the full dataset
+        full_df = self.load_dataset()
+        
+        # Iterate over each variation
+        for variation, columns_to_drop in self.variations.items():
+            # Save the variation of the full dataset
+            df_variation = self.save_variation(full_df, f"full_{variation}", columns_to_drop)
+            
+            # Split and save train and test sets for each variation
+            self.split_and_save(df_variation, variation)
 
-    # 4. Dataset with gender and age (original dataset, all columns)
-    df.to_csv(os.path.join(dataset_dir, f"{prefix}_with_gender_and_age.csv"), index=False, header=False)
-    print("Original dataset with gender and age saved")
 
+# Usage
 def main():
+    # Path to the full dataset (assumed to be in CSV format)
     dataset_path = "datasets/employes_flat_version.csv"
-    train_vectors, test_vectors = split_and_save_dataset(dataset_path, "saved_sets/train_vectors.pkl", "saved_sets/test_vectors.pkl")
+    save_dir = "datasets"
 
-    # Convert train and test vectors to DataFrames for easier manipulation
-    df_train = pd.DataFrame(train_vectors)
-    df_test = pd.DataFrame(test_vectors)
-
-    # Create directory for dataset variations if it doesn't exist
-    dataset_dir = "datasets"
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    # Save dataset variations for both train and test sets
-    save_dataset_variations(df_train, dataset_dir, "train")
-    save_dataset_variations(df_test, dataset_dir, "test")
+    # Create an instance of the DataSplitter and process the dataset
+    splitter = DataSplitter(dataset_path, save_dir)
+    splitter.process()
 
 if __name__ == "__main__":
     main()
