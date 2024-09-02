@@ -3,7 +3,6 @@ import random
 
 
 def mean_generator(K, values):
-    print("in mean_generator")
     # Ensure K does not exceed the length of values
     if K > len(values):
         K = len(values)

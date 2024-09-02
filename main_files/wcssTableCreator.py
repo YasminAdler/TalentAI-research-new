@@ -11,11 +11,9 @@ sys.path.append("../TalentAI-research-new-last-update")
 sys.path.append("C:/Users/adler/OneDrive/Talent.AI/TalentAI-research-new-last-update/.venv/Lib/site-packages")
 
 
-# Adjust paths as needed, assuming the script is run from a directory where 'main_files' is a sibling of 'saved_sets'
-base_directory = os.path.abspath('saved_sets')
+base_directory = os.path.abspath('saved_models')
 main_files_directory = os.path.abspath('main_files')
 
-# Add the 'main_files' directory to sys.path to ensure all imports are found
 sys.path.append(main_files_directory)
 
 def load_model_and_extract_wcss(model_path):
@@ -37,18 +35,15 @@ def create_wcss_table(model_paths):
 
 
 model_paths = {
-    "age_no_gender_Statistic_list_frequency": os.path.join(base_directory, 'age_no_gender_Statistic_list_frequency', 'age_no_gender_Statistic_list_frequency_train_model.pkl'),
-    "age_no_gender_Statistic_intersection": os.path.join(base_directory, 'age_no_gender_Statistic_intersection', 'age_no_gender_Statistic_intersection_train_model.pkl'),
-    "gender_no_age_Statistic_intersection": os.path.join(base_directory, 'gender_no_age_Statistic_intersection', 'gender_no_age_Statistic_intersection_train_model.pkl'),
-    "gender_no_age_Statistic_list_frequency": os.path.join(base_directory, 'gender_no_age_Statistic_list_frequency', 'gender_no_age_Statistic_list_frequency_train_model.pkl'),
-    "no_age_no_gender_Statistic_intersection": os.path.join(base_directory, 'no_age_no_gender_Statistic_intersection', 'no_age_no_gender_Statistic_intersection_train_model.pkl'),
-    "no_age_no_gender_Statistic_list_frequency": os.path.join(base_directory, 'no_age_no_gender_Statistic_list_frequency', 'no_age_no_gender_Statistic_list_frequency_train_model.pkl'),
-    "with_gender_and_age_Statistic_intersection": os.path.join(base_directory, 'with_gender_and_age_Statistic_intersection', 'with_gender_and_age_Statistic_intersection_train_model.pkl'),
-    "with_gender_and_age_Statistic_list_frequency": os.path.join(base_directory, 'with_gender_and_age_Statistic_list_frequency', 'with_gender_and_age_Statistic_list_frequency_train_model.pkl')
+    "age_no_gender_Statistic_list_frequency": os.path.join(base_directory,'age_no_gender','age_no_gender_Statistic_list_frequency_train_model.pkl'),
+    "age_no_gender_Statistic_intersection": os.path.join(base_directory,'age_no_gender', 'age_no_gender_Statistic_intersection_train_model.pkl'),
+    "gender_no_age_Statistic_intersection": os.path.join(base_directory, 'gender_no_age', 'gender_no_age_Statistic_intersection_train_model.pkl'),
+    "gender_no_age_Statistic_list_frequency": os.path.join(base_directory, 'gender_no_age', 'gender_no_age_Statistic_list_frequency_train_model.pkl'),
+    "no_age_no_gender_Statistic_intersection": os.path.join(base_directory, 'no_age_no_gender', 'no_age_no_gender_Statistic_intersection_train_model.pkl'),
+    "no_age_no_gender_Statistic_list_frequency": os.path.join(base_directory, 'no_age_no_gender', 'no_age_no_gender_Statistic_list_frequency_train_model.pkl'),
+    "with_gender_and_age_Statistic_intersection": os.path.join(base_directory, 'with_gender_and_age', 'with_gender_and_age_Statistic_intersection_train_model.pkl'),
+    "with_gender_and_age_Statistic_list_frequency": os.path.join(base_directory, 'with_gender_and_age', 'with_gender_and_age_Statistic_list_frequency_train_model.pkl')
 }
-
-
-# Create the WCSS table
 wcss_table = create_wcss_table(model_paths)
 
 # Save the table to a CSV file

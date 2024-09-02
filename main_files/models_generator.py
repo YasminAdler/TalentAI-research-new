@@ -1,3 +1,15 @@
+########################## INSTRUCTIONS ##########################
+## BEFORE CREATING A MODEL READ THIS: 
+##
+## Before choosing a dataset and a distance function: 
+## Initiate dataSplitter.py
+## uncomment the chosen distance fucntion part in statistic_regular_algo/KMeanClusterer.py
+## Uncomment the part of distance function in  main_files/customCentroids
+## Input the matching company index in _create_subclusters() in main_files/classCluster.py 
+## Input the company index in the chosen distance function file: (statistic_regular_algo/(Statistic_list_frequeny OR Statistic_intersection))
+## Uncomment normalization part for chosen dataset in distance function file: (Statistic_list_frequeny / Statistic_intersection)
+###################################################################
+
 import sys
 import logging
 import os
@@ -11,17 +23,8 @@ sys.path.append(os.path.abspath(os.path.join(script_dir, "..")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append("../TalentAI-research-new-last-update")
 sys.path.append("C:/Users/adler/OneDrive/Talent.AI/TalentAI-research-new-last-update/.venv/Lib/site-packages")
-import sys
-import logging
-import os
-import pickle
-import numpy as np
-import csv
 
 from general_algos.Preprocess_for_hr import preProcess, KMeansClusterer
-from utilss import mean_generator
-from collections import Counter
-from statistic_regular_algo.Statistic_dot_product import Statistic_dot_product
 from statistic_regular_algo.Statistic_list_frequency import Statistic_list_frequency
 from statistic_regular_algo.Statistic_intersection import Statistic_intersection
 
@@ -61,41 +64,59 @@ types_list_no_age_no_gender = ['categoric', 'categoric', 'categoric',
 
 distance_functions = {
     "Statistic_list_frequency": Statistic_list_frequency,
-    "Statistic_dot_product": Statistic_dot_product,
     "Statistic_intersection": Statistic_intersection
 }
 
 def process_and_cluster(full_vectors, train_vectors, dataset_option, distance_function, types_list_modified):
-    save_dir = "saved_sets"
+    save_dir = f"saved_models/{dataset_option}"
     os.makedirs(save_dir, exist_ok=True)
 
-    print("Preprocessing the full dataset...")
-    hp, k = preProcess(full_vectors, types_list_modified, distance_function, 9, 9)
+    try:
+        print("Preprocessing the full dataset...")
+        hp, k = preProcess(full_vectors, types_list_modified, distance_function, 9, 9)
 
-    print("Clustering the train set...")
-    model = KMeansClusterer(
-        num_means=k,
-        distance=distance_function,
-        repeats=2, ## changed by yasmin from 5 to 2
-        type_of_fields=types_list_modified,
-        hyper_params=hp,
-    )
-    model.cluster_vectorspace(train_vectors)
-    train_results = model.getModelData()
+        print("Clustering the train set...")
+        model = KMeansClusterer(
+            num_means=k,
+            distance=distance_function,
+            repeats=5,  # changed by yasmin from 5 to 2
+            type_of_fields=types_list_modified,
+            hyper_params=hp,
+        )
 
-    save_path_train = os.path.join(save_dir, f"{dataset_option}_{distance_function.__name__}_train_model.pkl")
-    with open(save_path_train, "wb") as f:
-        pickle.dump({
-            "train_results": train_results,
-            "all_clusters": model.all_clusters,
-            "hp": hp,
-            "k": k,
-            "model": model,
-            "type_of_fields": types_list_modified
-        }, f)
-    print(f"Training model and results saved to {save_path_train}")
-    
-    
+        # Error handling during clustering
+        try:
+            model.cluster_vectorspace(train_vectors)
+        except Exception as e:
+            logging.error(f"Error during clustering: {e}")
+            print(f"An error occurred during clustering: {e}")
+            return
+
+        train_results = model.getModelData()
+
+        # Validate clusters to ensure they are properly initialized
+        if not model.all_clusters or any(c is None for c in model.all_clusters):
+            logging.error("One or more clusters are not initialized correctly.")
+            print("Error: One or more clusters are not initialized correctly.")
+            return
+
+        save_path_train = os.path.join(save_dir, f"{dataset_option}_{distance_function.__name__}_train_model.pkl")
+        with open(save_path_train, "wb") as f:
+            pickle.dump({
+                "train_results": train_results,
+                "all_clusters": model.all_clusters,
+                "hp": hp,
+                "k": k,
+                "model": model,
+                "type_of_fields": types_list_modified
+            }, f)
+        
+        print(f"Training model and results saved to {save_path_train}")
+
+    except Exception as e:
+        logging.error(f"Unexpected error during processing and clustering: {e}")
+        print(f"An unexpected error occurred: {e}")
+
 def main():
     dataset_options = {
         "with_gender_and_age": types_list,
@@ -142,7 +163,7 @@ def main():
         for row in csvreader:
             full_vectors.append(np.array(row, dtype=object))
 
-    process_and_cluster(full_vectors,train_vectors, dataset_option, distance_function, types_list_modified)
+    process_and_cluster(full_vectors, train_vectors, dataset_option, distance_function, types_list_modified)
 
 if __name__ == "__main__":
     main()

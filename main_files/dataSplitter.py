@@ -7,8 +7,6 @@ class DataSplitter:
         self.dataset_path = dataset_path
         self.save_dir = save_dir
         os.makedirs(save_dir, exist_ok=True)
-
-        # Define the variations and columns to drop for each
         self.variations = {
             "with_gender_and_age": [],
             "gender_no_age": [4, 5],           # Exclude age and keep gender
@@ -33,7 +31,6 @@ class DataSplitter:
         """Split the dataset into train and test sets and save them."""
         train_vectors, test_vectors = train_test_split(df.values, test_size=0.20, random_state=42)
         
-        # Convert back to DataFrame for saving
         df_train = pd.DataFrame(train_vectors)
         df_test = pd.DataFrame(test_vectors)
 
@@ -43,25 +40,18 @@ class DataSplitter:
 
     def process(self):
         """Process the dataset: create variations and split into train/test."""
-        # Load the full dataset
         full_df = self.load_dataset()
         
-        # Iterate over each variation
         for variation, columns_to_drop in self.variations.items():
-            # Save the variation of the full dataset
             df_variation = self.save_variation(full_df, f"full_{variation}", columns_to_drop)
             
-            # Split and save train and test sets for each variation
             self.split_and_save(df_variation, variation)
 
 
-# Usage
 def main():
-    # Path to the full dataset (assumed to be in CSV format)
     dataset_path = "datasets/employes_flat_version.csv"
     save_dir = "datasets"
 
-    # Create an instance of the DataSplitter and process the dataset
     splitter = DataSplitter(dataset_path, save_dir)
     splitter.process()
 
