@@ -2,7 +2,6 @@
 ## this must be initiated only after the creation of the model using model generator
 ## the distance function and dataset option must be identical in both model generator and this recommendation algorithm
 ## Uncomment the normalization part according to the dataset you have chosen in Statistic_list_frequeny / Statistic_intersection
-## Change the company index according to the chosen dataset option 
 ## Uncomment the "columns to exclude" if statment in the chosen distance function file
 ##################################################################
 

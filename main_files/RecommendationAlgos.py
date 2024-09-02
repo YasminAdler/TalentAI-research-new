@@ -2,7 +2,6 @@
 ## this must be initiated only after the creation of the model using models_generator.py
 ## the distance function and dataset option must be identical in both model generator and this recommendation algorithm
 ## Uncomment the "columns to exclude" if statment in the choser distance function
-## Change the company index according to the chosen dataset option 
 ## Uncomment normalization according to the dataset you have chosen in Statistic_list_frequeny / Statistic_intersection
 ## Uncomment in the section below the recommendation algorithm you want to initiate: Standard / Multiclustering
 ##################################################################
@@ -27,7 +26,7 @@ from statistic_regular_algo.Statistic_intersection import Statistic_intersection
 
  
 ################# CHANGE company_index TO: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
-company_index = 10
+company_index = 9
 
 class CustomUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
@@ -171,6 +170,14 @@ def recommend_company_standard(query, model, hp, R,type_of_fields, distance_func
 # print(data_summary['model']._type_of_fields)
 
 
+# Define company indices mapping
+company_indices = {
+    "with_gender_and_age": 11,
+    "gender_no_age": 10,
+    "age_no_gender": 10,
+    "no_age_no_gender": 9
+}
+
 print("Choose a dataset option:")
 for idx, option in enumerate(dataset_options):
     print(f"{idx + 1}. {option}")
@@ -180,6 +187,7 @@ if dataset_choice < 0 or dataset_choice >= len(dataset_options):
     sys.exit(1)
 dataset_option = dataset_options[dataset_choice]
 
+company_index = company_indices[dataset_option]
 
 print("Choose a distance function:")
 for idx, option in enumerate(distance_functions.keys()):
@@ -195,79 +203,80 @@ model_path = os.path.join("saved_models", f"{dataset_option}",f"{dataset_option}
 test_path = os.path.join("datasets", f"test_{dataset_option}.csv")
 
 
+
 R=13
 
 
-######## Uncomment this to use the multiclustering recommendation algorithm
-try:
-    model, hp, type_of_fields = load_model(model_path)
-    test_vectors = load_test_vectors(test_path)
-
-    print(f"Loaded model from {model_path}")
-    print(f"Model: {model}")
-    print(f"Number of test vectors: {len(test_vectors)}")
-    
-    output_dir = os.path.join("results", f"{dataset_option}")
-    os.makedirs(output_dir, exist_ok=True)
-    output_file = os.path.join(output_dir, f"{distance_function_name}_multiclustering_recommendations.csv")
-    
-    with open(output_file, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        header = ["Query", "Company_1", "Distance_1", "Company_2", "Distance_2", "Company_3", "Distance_3", "Company_4", "Distance_4", "Company_5", "Distance_5"]
-        writer.writerow(header)
-
-        for query in test_vectors:
-            ranked_subclusters = recommend_company(query, model, hp, type_of_fields, distance_function)
-            row = [str(query)]  # Convert the query to a string representation
-            for company, distance in ranked_subclusters:  # Assuming you want the top 5 recommendations
-                row.append(company)
-                row.append(distance)
-            writer.writerow(row)
-    print(f"Queries and recommendations have been saved to {output_file}")
-
-except FileNotFoundError as fnf_error:
-    print(fnf_error)
-except Exception as e:
-    print(f"An error occurred: {e}")
-
-
-# ######### Uncomment this to use the standard recommendation algorithm
+# ######## Uncomment this to use the multiclustering recommendation algorithm
 # try:
 #     model, hp, type_of_fields = load_model(model_path)
 #     test_vectors = load_test_vectors(test_path)
-    
+
 #     print(f"Loaded model from {model_path}")
 #     print(f"Model: {model}")
 #     print(f"Number of test vectors: {len(test_vectors)}")
-
+    
 #     output_dir = os.path.join("results", f"{dataset_option}")
 #     os.makedirs(output_dir, exist_ok=True)
-
-#     output_file = os.path.join(output_dir, f"{distance_function_name}_standard_recommendations.csv")
+#     output_file = os.path.join(output_dir, f"{distance_function_name}_multiclustering_recommendations.csv")
+    
 #     with open(output_file, mode='w', newline='', encoding='utf-8') as file:
 #         writer = csv.writer(file)
-        
-#         header = ["Query"] + [f"Company_{i+1}" for i in range(R)] + [f"Distance_{i+1}" for i in range(R)]
+#         header = ["Query", "Company_1", "Distance_1", "Company_2", "Distance_2", "Company_3", "Distance_3", "Company_4", "Distance_4", "Company_5", "Distance_5"]
 #         writer.writerow(header)
 
 #         for query in test_vectors:
-#             ranked_records = recommend_company_standard(query, model, hp, R, type_of_fields, distance_function)
-#             row = [str(query)] 
-            
-#             for i in range(R):
-#                 if i < len(ranked_records):
-#                     company, distance = ranked_records[i]
-#                     row.append(company)
-#                     row.append(distance)
-#                 else:
-#                     row.append("")
-#                     row.append("")
-            
+#             ranked_subclusters = recommend_company(query, model, hp, type_of_fields, distance_function)
+#             row = [str(query)]  # Convert the query to a string representation
+#             for company, distance in ranked_subclusters:  # Assuming you want the top 5 recommendations
+#                 row.append(company)
+#                 row.append(distance)
 #             writer.writerow(row)
-    
 #     print(f"Queries and recommendations have been saved to {output_file}")
 
 # except FileNotFoundError as fnf_error:
 #     print(fnf_error)
 # except Exception as e:
 #     print(f"An error occurred: {e}")
+
+
+######### Uncomment this to use the standard recommendation algorithm
+try:
+    model, hp, type_of_fields = load_model(model_path)
+    test_vectors = load_test_vectors(test_path)
+    
+    print(f"Loaded model from {model_path}")
+    print(f"Model: {model}")
+    print(f"Number of test vectors: {len(test_vectors)}")
+
+    output_dir = os.path.join("results", f"{dataset_option}")
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_file = os.path.join(output_dir, f"{distance_function_name}_standard_recommendations.csv")
+    with open(output_file, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        
+        header = ["Query"] + [f"Company_{i+1}" for i in range(R)] + [f"Distance_{i+1}" for i in range(R)]
+        writer.writerow(header)
+
+        for query in test_vectors:
+            ranked_records = recommend_company_standard(query, model, hp, R, type_of_fields, distance_function)
+            row = [str(query)] 
+            
+            for i in range(R):
+                if i < len(ranked_records):
+                    company, distance = ranked_records[i]
+                    row.append(company)
+                    row.append(distance)
+                else:
+                    row.append("")
+                    row.append("")
+            
+            writer.writerow(row)
+    
+    print(f"Queries and recommendations have been saved to {output_file}")
+
+except FileNotFoundError as fnf_error:
+    print(fnf_error)
+except Exception as e:
+    print(f"An error occurred: {e}")

@@ -47,7 +47,7 @@ class Cluster:
 
     ################# BEFORE THE MODEL GENERATION change company_index to: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
     def _create_subclusters(self):
-        company_index = 10
+        company_index = 9
         subclusters = {}
         
         try:

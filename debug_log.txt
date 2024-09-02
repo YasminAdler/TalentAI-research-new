@@ -1353,3 +1353,39 @@
 2024-09-02 10:09:07,907:DEBUG:platform is win32
 2024-09-02 10:09:07,965:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
 2024-09-02 10:09:07,965:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
+2024-09-02 10:12:29,720:DEBUG:matplotlib data path: C:\Users\adler\OneDrive\Talent.AI\TalentAI-research-yasmin\.venv\Lib\site-packages\matplotlib\mpl-data
+2024-09-02 10:12:29,722:DEBUG:CONFIGDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:12:29,722:DEBUG:interactive is False
+2024-09-02 10:12:29,722:DEBUG:platform is win32
+2024-09-02 10:12:29,777:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:12:29,777:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
+2024-09-02 10:13:07,358:DEBUG:matplotlib data path: C:\Users\adler\OneDrive\Talent.AI\TalentAI-research-yasmin\.venv\Lib\site-packages\matplotlib\mpl-data
+2024-09-02 10:13:07,369:DEBUG:CONFIGDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:13:07,369:DEBUG:interactive is False
+2024-09-02 10:13:07,369:DEBUG:platform is win32
+2024-09-02 10:13:07,430:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:13:07,430:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
+2024-09-02 10:14:42,795:DEBUG:matplotlib data path: C:\Users\adler\OneDrive\Talent.AI\TalentAI-research-yasmin\.venv\Lib\site-packages\matplotlib\mpl-data
+2024-09-02 10:14:42,795:DEBUG:CONFIGDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:14:42,810:DEBUG:interactive is False
+2024-09-02 10:14:42,810:DEBUG:platform is win32
+2024-09-02 10:14:42,857:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:14:42,857:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
+2024-09-02 10:18:32,486:DEBUG:matplotlib data path: C:\Users\adler\OneDrive\Talent.AI\TalentAI-research-yasmin\.venv\Lib\site-packages\matplotlib\mpl-data
+2024-09-02 10:18:32,493:DEBUG:CONFIGDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:18:32,495:DEBUG:interactive is False
+2024-09-02 10:18:32,495:DEBUG:platform is win32
+2024-09-02 10:18:32,566:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:18:32,569:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
+2024-09-02 10:21:13,068:DEBUG:matplotlib data path: C:\Users\adler\OneDrive\Talent.AI\TalentAI-research-yasmin\.venv\Lib\site-packages\matplotlib\mpl-data
+2024-09-02 10:21:13,076:DEBUG:CONFIGDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:21:13,081:DEBUG:interactive is False
+2024-09-02 10:21:13,081:DEBUG:platform is win32
+2024-09-02 10:21:13,155:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:21:13,155:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
+2024-09-02 10:59:18,856:DEBUG:matplotlib data path: C:\Users\adler\OneDrive\Talent.AI\TalentAI-research-yasmin\.venv\Lib\site-packages\matplotlib\mpl-data
+2024-09-02 10:59:18,866:DEBUG:CONFIGDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:59:18,869:DEBUG:interactive is False
+2024-09-02 10:59:18,869:DEBUG:platform is win32
+2024-09-02 10:59:18,954:DEBUG:CACHEDIR=C:\Users\adler\.matplotlib
+2024-09-02 10:59:18,956:DEBUG:Using fontManager instance from C:\Users\adler\.matplotlib\fontlist-v390.json
