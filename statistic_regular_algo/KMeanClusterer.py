@@ -77,6 +77,7 @@ class KMeansClusterer:
 
 
     def createClusterJson(self):
+        print("in createClusterJson")
         jsonData = {
             "wcss": self._wcss,
             "silhouette": self.silhouette,
@@ -98,6 +99,7 @@ class KMeansClusterer:
         jsonData['cluster_values'] = self._clusters_info
         jsonData['hyperParams'] = self._hyper_parameters
         self._model_json_info = jsonData
+        print(jsonData)
 
     def getModelData(self):
         return self._model_json_info
@@ -138,7 +140,7 @@ class KMeansClusterer:
 
                 if self._type_of_fields[ind] == "list":
 
-                    # ############## this version is for hamming talentai method (סדר מקורי)
+    ############################ this version is for hamming talentai method ############################
 
                     # lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]
                     
@@ -189,42 +191,43 @@ class KMeansClusterer:
                 #     most_common_values = [value for value, count in value_counts.items() if count >= threshold]
                 #     data = most_common_values
 
-                    ############## this version is for list frequency (איראנים רשימה) #####
-                    avg_length = self._hyper_parameters["avg_list_len"][ind]
-                    # extract lists
-                    lists_at_index = [ast.literal_eval(vector[ind]) for vector in cluster]
-                    
-                    # sort all lists
-                    lists_at_index = [sorted(sublist, key=lambda x: self._hyper_parameters["list_freq_dict"][ind].get(x, 0), reverse=True) for sublist
-                                       in lists_at_index]
-                    # pad data
-                    
-                    padded_data = [lst + ['missing_val'] * (self._hyper_parameters["avg_list_len"][ind] - len(lst)) for lst in lists_at_index]
-                    # voting
-                    
-                    transposed_data = zip(*padded_data)
-                    # Initialize the voting list
-                    voting_list = []
-                    # Iterate over each column
-                    for column in transposed_data:
-                        # Count occurrences of each value in the column
-                        counts = Counter(column)
-                        # Find the most common values
-                        most_common_values = counts.most_common(2)
-                    
-                        # Check if the most common value is "missing_val"
-                        if most_common_values[0][0] == "missing_val":
-                            if len(most_common_values) >= 2:
-                                most_common_value = most_common_values[1][0]
-                            else:
-                                most_common_value = "missing_val"
-                        else:
-                            most_common_value = most_common_values[0][0]
-                    
-                        # todo: most common value needs to be a real value, exclude missing vals - done!
-                        # Append the most common value to the voting list
-                        voting_list.append(most_common_value)
-                    data = voting_list
+
+  ############################ this version is for list frequency ############################
+                    # avg_length = self._hyper_parameters["avg_list_len"][ind]
+                    # # extract lists
+                    # lists_at_index = [ast.literal_eval(vector[ind]) for vector in cluster]
+                    #
+                    # # sort all lists
+                    # lists_at_index = [sorted(sublist, key=lambda x: self._hyper_parameters["list_freq_dict"][ind].get(x, 0), reverse=True) for sublist
+                    #                    in lists_at_index]
+                    # # pad data
+                    #
+                    # padded_data = [lst + ['missing_val'] * (self._hyper_parameters["avg_list_len"][ind] - len(lst)) for lst in lists_at_index]
+                    # # voting
+                    #
+                    # transposed_data = zip(*padded_data)
+                    # # Initialize the voting list
+                    # voting_list = []
+                    # # Iterate over each column
+                    # for column in transposed_data:
+                    #     # Count occurrences of each value in the column
+                    #     counts = Counter(column)
+                    #     # Find the most common values
+                    #     most_common_values = counts.most_common(2)
+                    #
+                    #     # Check if the most common value is "missing_val"
+                    #     if most_common_values[0][0] == "missing_val":
+                    #         if len(most_common_values) >= 2:
+                    #             most_common_value = most_common_values[1][0]
+                    #         else:
+                    #             most_common_value = "missing_val"
+                    #     else:
+                    #         most_common_value = most_common_values[0][0]
+                    #
+                    #     # todo: most common value needs to be a real value, exclude missing vals - done!
+                    #     # Append the most common value to the voting list
+                    #     voting_list.append(most_common_value)
+                    # data = voting_list
 
 
                     ## for every method keep these lines
@@ -428,7 +431,7 @@ class KMeansClusterer:
                     # print("problem generating, trying again")
                     print("problem generating, continuing the loop")
                     #  exit() #nooo
-                    self._means = mean_generator(self._num_means, vectors)
+                    self._means = utilss.mean_generator(self._num_means, vectors)
                     continue
                 # add the new means each time
                 meanss.append(self._means)
@@ -511,16 +514,16 @@ class KMeansClusterer:
                 difference = self._sum_distances(self._means, new_means)
                 # remember the new means
                 self._means = new_means
-
-                if difference < self._max_difference or current_iteration == MAX_ITERATION:
+                
+                # if difference < self._max_difference or current_iteration == MAX_ITERATION:
+                if difference > self._max_difference:
                     converged = True
-
-            self._clusters_info = clusters
-            # self.createClusterJson()
-            # print ('cluster means: ', self._means)
-        else:
-            print("erorr!!!!")
-            pass  # todo: return error here
+                    self._clusters_info = clusters
+                    # self.createClusterJson()
+                    # print ('cluster means: ', self._means)
+                else:
+                    print("erorr!!!!")
+                    pass  # todo: return error here
 
     def classify_vectorspace(self, vector):
         # finds the closest cluster centroid
