@@ -1,7 +1,7 @@
 import ast
-
 import numpy as np
 import math
+import pandas as pd
 
 ################# change company_index to: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
 def Statistic_intersection(u, v, type_values, parameters):
@@ -43,15 +43,15 @@ def Statistic_intersection(u, v, type_values, parameters):
     for i in range(len(v)):
         if(i == company_index):
             continue
-        # if(i in columns_to_exclude): ## if in RoleToEmployee uncomment this
-        #     continue
+        if(i in columns_to_exclude): ## if in RoleToEmployee uncomment this
+            continue
         
         # catrgorical handle
         if type_values[i] == "categoric":
             try:
                 ################################# this was changed by yasmin #################################
                 # if (u[i] and v[i]) or (u[i] != "" and v[i] != ""):
-                if (u[i] and v[i]):
+                if pd.notna(u[i]) and pd.notna(v[i]):
                     if u[i] == v[i]:
                         results.append(0)
                         ########### up here
@@ -81,9 +81,12 @@ def Statistic_intersection(u, v, type_values, parameters):
                 print("i is", i)
                 print("type values is", type_values, len(type_values))
 
-        # # Numeric Handling - with_gender_and_age
+        #  # Numeric Handling - with_gender_and_age
         # if type_values[i] == "numeric":
-        #         if (u[i] and v[i]):
+        #     try:
+        #         if pd.notna(u[i]) and pd.notna(v[i]): ###
+        #             # ### was changed to u[i] and v[i] and u[i] != "" and v[i] != "" 
+        #             ## to do: change in all distance functions
         #             if i == 4:
         #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
         #                 v_val = (float(v[i]) - 1913) / (1997 - 1913)
@@ -94,12 +97,18 @@ def Statistic_intersection(u, v, type_values, parameters):
         #                 v_val = (float(v[i]) - 3.11) / (5 - 3.11)
         #                 u_val = (float(u[i]) - 3.11) / (5 - 3.11)
         #             val = (u_val - v_val) ** 2
+        #             if math.isnan(val):
+        #                 print(f"NaN found in numeric calculation at index {i}. u_val: {u_val}, v_val: {v_val}")
         #             distance += val
-
-        
-        # # Numeric Handling - gender_no_age 
+        #     except Exception as e:
+        #         distance += 0
+        #         # print("u[i]", u[i]) 
+        #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
+    
+        # ## Numeric Handling - gender_no_age 
         # if type_values[i] == "numeric":
-        #         if (u[i] and v[i]):
+        #     try:
+        #         if pd.notna(u[i]) and pd.notna(v[i]): ## to do delete or (u[i] != "" and v[i] != "") for alllll I THINK THIS IS BECAUSE THEYRE VALUE IS 'nan'
 
         #             if i == 4:
         #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
@@ -115,12 +124,15 @@ def Statistic_intersection(u, v, type_values, parameters):
                         
         #                 val = (u_val - v_val) ** 2
         #                 distance += val 
-
-                        
-            
+        #     except Exception as e:
+        #         distance +=0    
+        #         # print("u[i]", u[i]) 
+        #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u         
+                
         # Numeric Handling - age_no_gender 
         if type_values[i] == "numeric":
-                if (u[i] and v[i]):
+            try:
+                if pd.notna(u[i]) and pd.notna(v[i]):
                     if i == 3:
                         u_val = (float(u[i]) - 1913) / (1997 - 1913)
                         v_val = (float(v[i]) - 1913) / (1997 - 1913)
@@ -135,11 +147,16 @@ def Statistic_intersection(u, v, type_values, parameters):
                         
                     val = (u_val - v_val) ** 2
                     distance += val 
-
+            except Exception as e:
+                distance +=0    
+                # print("u[i]", u[i]) 
+                # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
+                
 
         # # Numeric Handling - no_age_no_gender
         # if type_values[i] == "numeric":
-        #     if (u[i] and v[i]):
+        #     try:
+        #         if pd.notna(u[i]) and pd.notna(v[i]):
         #             if i == 3:
         #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
         #                 v_val = (float(v[i]) - 1913) / (1997 - 1913)
@@ -154,6 +171,11 @@ def Statistic_intersection(u, v, type_values, parameters):
                         
         #             val = (u_val - v_val) ** 2
         #             distance += val 
+        #     except Exception as e:
+        #         distance +=0    
+        #         # print("u[i]", u[i]) 
+        #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
+
 
         if type_values[i] == "list":
             # create one hot vector
@@ -172,7 +194,13 @@ def Statistic_intersection(u, v, type_values, parameters):
             distance += 1 if sum(union) == 0 else 1 - sum(intersection) / sum(union)
 
 
+    if math.isnan(distance):
+        print("Final distance is NaN. Exiting function.")
+        return float('inf'), results
+
     distance = math.sqrt(distance)
-    # print("ended statistic")
+    if math.isnan(distance):
+        print("Distance is NaN after sqrt, exiting function.")
+        return float('inf'), results
 
     return distance, results

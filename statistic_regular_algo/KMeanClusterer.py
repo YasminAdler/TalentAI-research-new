@@ -176,57 +176,57 @@ class KMeansClusterer:
                     # data = voting_list
 
 
-                #     ########### this version is for dot product and intersection
-                # #    Extract lists from the indth index of each vector
+                    ########### this version is for dot product and intersection
+                #    Extract lists from the indth index of each vector
 
-                #     lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]
+                    lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]
 
-                #     # Flatten the lists and count occurrences of each value
-                #     flattened_list = [item for sublist in lists_at_ind_index for item in sublist]
-                #     value_counts = Counter(flattened_list)
+                    # Flatten the lists and count occurrences of each value
+                    flattened_list = [item for sublist in lists_at_ind_index for item in sublist]
+                    value_counts = Counter(flattened_list)
 
-                #     # Find values that appear in at least 50% of the lists
-                #     threshold = len(cluster) / 2
-                #     most_common_values = [value for value, count in value_counts.items() if count >= threshold]
-                #     data = most_common_values
+                    # Find values that appear in at least 50% of the lists
+                    threshold = len(cluster) / 2
+                    most_common_values = [value for value, count in value_counts.items() if count >= threshold]
+                    data = most_common_values
 
 
-  ########################### this version is for list frequency ############################
-                    avg_length = self._hyper_parameters["avg_list_len"][ind]
-                    # extract lists
-                    lists_at_index = [ast.literal_eval(vector[ind]) for vector in cluster]
+#   ########################### this version is for list frequency ############################
+#                     avg_length = self._hyper_parameters["avg_list_len"][ind]
+#                     # extract lists
+#                     lists_at_index = [ast.literal_eval(vector[ind]) for vector in cluster]
                     
-                    # sort all lists
-                    lists_at_index = [sorted(sublist, key=lambda x: self._hyper_parameters["list_freq_dict"][ind].get(x, 0), reverse=True) for sublist
-                                       in lists_at_index]
-                    # pad data
+#                     # sort all lists
+#                     lists_at_index = [sorted(sublist, key=lambda x: self._hyper_parameters["list_freq_dict"][ind].get(x, 0), reverse=True) for sublist
+#                                        in lists_at_index]
+#                     # pad data
                     
-                    padded_data = [lst + ['missing_val'] * (self._hyper_parameters["avg_list_len"][ind] - len(lst)) for lst in lists_at_index]
-                    # voting
+#                     padded_data = [lst + ['missing_val'] * (self._hyper_parameters["avg_list_len"][ind] - len(lst)) for lst in lists_at_index]
+#                     # voting
                     
-                    transposed_data = zip(*padded_data)
-                    # Initialize the voting list
-                    voting_list = []
-                    # Iterate over each column
-                    for column in transposed_data:
-                        # Count occurrences of each value in the column
-                        counts = Counter(column)
-                        # Find the most common values
-                        most_common_values = counts.most_common(2)
+#                     transposed_data = zip(*padded_data)
+#                     # Initialize the voting list
+#                     voting_list = []
+#                     # Iterate over each column
+#                     for column in transposed_data:
+#                         # Count occurrences of each value in the column
+#                         counts = Counter(column)
+#                         # Find the most common values
+#                         most_common_values = counts.most_common(2)
                     
-                        # Check if the most common value is "missing_val"
-                        if most_common_values[0][0] == "missing_val":
-                            if len(most_common_values) >= 2:
-                                most_common_value = most_common_values[1][0]
-                            else:
-                                most_common_value = "missing_val"
-                        else:
-                            most_common_value = most_common_values[0][0]
+#                         # Check if the most common value is "missing_val"
+#                         if most_common_values[0][0] == "missing_val":
+#                             if len(most_common_values) >= 2:
+#                                 most_common_value = most_common_values[1][0]
+#                             else:
+#                                 most_common_value = "missing_val"
+#                         else:
+#                             most_common_value = most_common_values[0][0]
                     
-                        # todo: most common value needs to be a real value, exclude missing vals - done!
-                        # Append the most common value to the voting list
-                        voting_list.append(most_common_value)
-                    data = voting_list
+#                         # todo: most common value needs to be a real value, exclude missing vals - done!
+#                         # Append the most common value to the voting list
+#                         voting_list.append(most_common_value)
+#                     data = voting_list
 
 
                     ## for every method keep these lines
