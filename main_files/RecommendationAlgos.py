@@ -13,6 +13,10 @@ import pickle
 import numpy as np
 import pandas as pd
 import logging
+    
+import pandas as pd
+import numpy as np
+import ast
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,19 +24,41 @@ sys.path.append(os.path.abspath(os.path.join(script_dir, "..")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 logging.basicConfig(filename='debug_log.txt', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
-from general_algos.Preprocess_for_hr import KMeansClusterer
 from statistic_regular_algo.Statistic_list_frequency import Statistic_list_frequency
 from statistic_regular_algo.Statistic_intersection import Statistic_intersection
 
  
-################# CHANGE company_index TO: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
-company_index = 9
-
 class CustomUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
         if module == "main_files":
             module = "__main__"
         return super().find_class(module, name)
+    
+
+def preprocess_data(vector):
+    processed_vector = []
+    for item in vector:
+        if pd.isna(item):
+            processed_vector.append('')  # convert NaN to empty string
+        elif isinstance(item, (int, float)):
+            processed_vector.append(str(item))  # convert numeric to string
+        else:
+            processed_vector.append(item) # no needed conversion for lists beacuse already done in preprocess 
+    return processed_vector
+
+
+def load_test_vectors(test_path):
+    if not os.path.exists(test_path):
+        raise FileNotFoundError(f"The file {test_path} does not exist.")
+    
+    # Load data using pandas
+    df = pd.read_csv(test_path, header=None)
+    df = df.replace({np.nan: ''})  # Replace NaN with empty strings
+
+    # Preprocess each row to handle missing values and lists consistently
+    test_vectors = [preprocess_data(row.tolist()) for _, row in df.iterrows()]
+    return test_vectors
+
 
 def load_model(model_path):
     """
@@ -49,21 +75,22 @@ def load_model(model_path):
     type_of_fields=model_data["type_of_fields"]
     # print("HP:", hp)
 
-    if not model.all_clusters:
-        raise ValueError("No clusters found in the loaded model.")
-    for cluster in model.all_clusters:
-        if cluster.subclusters is None or not cluster.subclusters:
-            raise ValueError(f"Subclusters missing or not initialized for cluster {cluster.cluster_id}.")
+    # if not model.all_clusters:
+    #     raise ValueError("No clusters found in the loaded model.")
+    # for cluster in model.all_clusters:
+    #     # print("cluster.data",cluster.data)
+    #     if cluster.subclusters is None or not cluster.subclusters:
+    #         raise ValueError(f"Subclusters missing or not initialized for cluster {cluster.cluster_id}.")
     return model, hp, type_of_fields
 
-def load_test_vectors(test_path):
-    if not os.path.exists(test_path):
-        raise FileNotFoundError(f"The file {test_path} does not exist.")
+# def load_test_vectors(test_path):
+#     if not os.path.exists(test_path):
+#         raise FileNotFoundError(f"The file {test_path} does not exist.")
     
-    df = pd.read_csv(test_path, header=None)
-    test_vectors = [row.tolist() for _, row in df.iterrows()]
+#     df = pd.read_csv(test_path, header=None)
+#     test_vectors = [row.tolist() for _, row in df.iterrows()]
         
-    return test_vectors
+#     return test_vectors
 
 def find_nearest_cluster(query, model, hp, type_of_fields, distance_function):
     min_distance = float('inf')
@@ -75,27 +102,31 @@ def find_nearest_cluster(query, model, hp, type_of_fields, distance_function):
             print("Encountered a None cluster during iteration.")
             continue  # Skip any None clusters
         cluster_mean = cluster.mean
-        try:
+        # print("cluseter_mean", cluster_mean) # the mean exists from checking
+        # print(distance_function) ## the distance function exists and match from checking
+        try:            
             distance, result = distance_function(query, cluster_mean, type_of_fields, hp)
-
+            # print("DISTANCE", distance)
+            
         except Exception as e:
-            logging.error(f"Error calculating distance: {e}")
-            continue  # Skip this cluster if there's an error
+            print(f"Error calculating distance: {e}")
 
         if distance < min_distance:
             min_distance = distance
             closest_cluster = cluster
             closest_cluster_mean = cluster_mean
-
-    return closest_cluster, closest_cluster_mean
-
-
+    # print(closest_cluster)
+    return closest_cluster
 
 def rank_nearest_subcluster(query, nearest_cluster, model, hp, type_of_fields, distance_function):
     distances = []
-
     for subcluster in nearest_cluster.subclusters.values():
-        subcluster_centroid = subcluster.centroid 
+        subcluster_centroid = subcluster.centroid
+        
+        # Ensure subcluster_centroid is also a flat list of feature values
+        if isinstance(subcluster_centroid, list) and len(subcluster_centroid) == 1 and isinstance(subcluster_centroid[0], np.ndarray):
+            subcluster_centroid = subcluster_centroid[0].tolist()
+
         distance, result = distance_function(query, subcluster_centroid, type_of_fields, hp)
         distances.append((subcluster.company, distance))
 
@@ -104,9 +135,7 @@ def rank_nearest_subcluster(query, nearest_cluster, model, hp, type_of_fields, d
 
 
 def recommend_company(query, model, hp, type_of_fields, distance_function):
-    nearest_cluster, nearest_cluster_mean = find_nearest_cluster(query, model, hp, type_of_fields, distance_function)
-    if nearest_cluster_mean is not None and isinstance(nearest_cluster_mean, np.ndarray):
-        nearest_cluster_mean = nearest_cluster_mean.tolist()
+    nearest_cluster = find_nearest_cluster(query, model, hp, type_of_fields, distance_function)
     
     ranked_subclusters = rank_nearest_subcluster(query, nearest_cluster, model, hp, type_of_fields, distance_function)
 
@@ -120,14 +149,14 @@ distance_functions = {
 
 
 
-def find_nearest_records_in_cluster(query, cluster, model, hp, R, distance_function):
+def find_nearest_records_in_cluster(query, nearest_cluster, model, hp, R, distance_function):
     """
     Find the R nearest records in the specified cluster to the given query using the model and saved hyperparameters.
     """
     distances = []
-    for record in cluster.data[cluster.cluster_id]:
-        distance, _ = distance_function(query, record, model._type_of_fields, hp)
-        company = record[company_index]
+    for record in nearest_cluster.data[nearest_cluster.cluster_id]:
+        distance, results = distance_function(query, record, model._type_of_fields, hp)
+        company = record[company_index]    
         distances.append((company, distance))
 
     distances.sort(key=lambda x: x[1])
@@ -135,13 +164,7 @@ def find_nearest_records_in_cluster(query, cluster, model, hp, R, distance_funct
 
 
 def recommend_company_standard(query, model, hp, R,type_of_fields, distance_function):
-    """
-    Recommend companies using the standard recommendation approach, which finds the nearest cluster and ranks records within it.
-    """
-    nearest_cluster, nearest_cluster_mean = find_nearest_cluster(query, model, hp, type_of_fields, distance_function)
-    
-    if nearest_cluster_mean is not None and isinstance(nearest_cluster_mean, np.ndarray):
-        nearest_cluster_mean = nearest_cluster_mean.tolist()
+    nearest_cluster = find_nearest_cluster(query, model, hp, type_of_fields, distance_function)
 
     ranked_records = find_nearest_records_in_cluster(query, nearest_cluster, model, hp, R, distance_function)
     return ranked_records
@@ -149,7 +172,7 @@ def recommend_company_standard(query, model, hp, R,type_of_fields, distance_func
 
 # # code for inspecting the model pickel 
 
-# file_path = 'saved_models\with_gender_and_age_Statistic_list_frequency\with_gender_and_age_Statistic_list_frequency_train_model.pkl'
+# file_path = 'saved_models\with_gender_and_age\with_gender_and_age_Statistic_intersection_train_model.pkl'
 
 # with open(file_path, 'rb') as file:
 #     data = pickle.load(file)
@@ -164,10 +187,10 @@ def recommend_company_standard(query, model, hp, R,type_of_fields, distance_func
 #         "model": data.get('model'),
 # }
 # print(data_summary)
-# print("_hyper_parameters")
-# print(data_summary['model']._hyper_parameters)
-# print("_type_of_fields")
-# print(data_summary['model']._type_of_fields)
+# # print("_hyper_parameters")
+# # print(data_summary['model']._hyper_parameters)
+# # print("_type_of_fields")
+# # print(data_summary['model']._type_of_fields)
 
 
 # Define company indices mapping
@@ -196,7 +219,10 @@ distance_choice = int(input("Enter the number of your choice: ")) - 1
 if distance_choice < 0 or distance_choice >= len(distance_functions):
     print("Invalid choice. Please enter a valid number.")
     sys.exit(1)
+    
+    
 distance_function_name = list(distance_functions.keys())[distance_choice]
+
 distance_function = distance_functions[distance_function_name]
 
 model_path = os.path.join("saved_models", f"{dataset_option}",f"{dataset_option}_{distance_function_name}_train_model.pkl")
@@ -206,77 +232,76 @@ test_path = os.path.join("datasets", f"test_{dataset_option}.csv")
 
 R=13
 
-
-# ######## Uncomment this to use the multiclustering recommendation algorithm
-# try:
-#     model, hp, type_of_fields = load_model(model_path)
-#     test_vectors = load_test_vectors(test_path)
-
-#     print(f"Loaded model from {model_path}")
-#     print(f"Model: {model}")
-#     print(f"Number of test vectors: {len(test_vectors)}")
-    
-#     output_dir = os.path.join("results", f"{dataset_option}")
-#     os.makedirs(output_dir, exist_ok=True)
-#     output_file = os.path.join(output_dir, f"{distance_function_name}_multiclustering_recommendations.csv")
-    
-#     with open(output_file, mode='w', newline='', encoding='utf-8') as file:
-#         writer = csv.writer(file)
-#         header = ["Query", "Company_1", "Distance_1", "Company_2", "Distance_2", "Company_3", "Distance_3", "Company_4", "Distance_4", "Company_5", "Distance_5"]
-#         writer.writerow(header)
-
-#         for query in test_vectors:
-#             ranked_subclusters = recommend_company(query, model, hp, type_of_fields, distance_function)
-#             row = [str(query)]  # Convert the query to a string representation
-#             for company, distance in ranked_subclusters:  # Assuming you want the top 5 recommendations
-#                 row.append(company)
-#                 row.append(distance)
-#             writer.writerow(row)
-#     print(f"Queries and recommendations have been saved to {output_file}")
-
-# except FileNotFoundError as fnf_error:
-#     print(fnf_error)
-# except Exception as e:
-#     print(f"An error occurred: {e}")
-
-
-######### Uncomment this to use the standard recommendation algorithm
+####### Uncomment this to use the multiclustering recommendation algorithm
 try:
     model, hp, type_of_fields = load_model(model_path)
     test_vectors = load_test_vectors(test_path)
-    
+
     print(f"Loaded model from {model_path}")
     print(f"Model: {model}")
     print(f"Number of test vectors: {len(test_vectors)}")
-
+    
     output_dir = os.path.join("results", f"{dataset_option}")
     os.makedirs(output_dir, exist_ok=True)
-
-    output_file = os.path.join(output_dir, f"{distance_function_name}_standard_recommendations.csv")
+    output_file = os.path.join(output_dir, f"{distance_function_name}_multiclustering_recommendations.csv")
+    
     with open(output_file, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        
-        header = ["Query"] + [f"Company_{i+1}" for i in range(R)] + [f"Distance_{i+1}" for i in range(R)]
+        header = ["Query", "Company_1", "Distance_1", "Company_2", "Distance_2", "Company_3", "Distance_3", "Company_4", "Distance_4", "Company_5", "Distance_5"]
         writer.writerow(header)
 
         for query in test_vectors:
-            ranked_records = recommend_company_standard(query, model, hp, R, type_of_fields, distance_function)
-            row = [str(query)] 
-            
-            for i in range(R):
-                if i < len(ranked_records):
-                    company, distance = ranked_records[i]
-                    row.append(company)
-                    row.append(distance)
-                else:
-                    row.append("")
-                    row.append("")
-            
+            ranked_subclusters = recommend_company(query, model, hp, type_of_fields, distance_function)
+            row = [str(query)]  # Convert the query to a string representation
+            for company, distance in ranked_subclusters:  # Assuming you want the top 5 recommendations
+                row.append(company)
+                row.append(distance)
             writer.writerow(row)
-    
     print(f"Queries and recommendations have been saved to {output_file}")
 
 except FileNotFoundError as fnf_error:
     print(fnf_error)
 except Exception as e:
     print(f"An error occurred: {e}")
+
+
+# # ######### Uncomment this to use the standard recommendation algorithm
+# try:
+#     model, hp, type_of_fields = load_model(model_path)
+#     test_vectors = load_test_vectors(test_path)
+    
+#     print(f"Loaded model from {model_path}")
+#     print(f"Model: {model}")
+#     print(f"Number of test vectors: {len(test_vectors)}")
+
+#     output_dir = os.path.join("results", f"{dataset_option}")
+#     os.makedirs(output_dir, exist_ok=True)
+
+#     output_file = os.path.join(output_dir, f"{distance_function_name}_standard_recommendations.csv")
+#     with open(output_file, mode='w', newline='', encoding='utf-8') as file:
+#         writer = csv.writer(file)
+        
+#         header = ["Query"] + [f"Company_{i+1}" for i in range(R)] + [f"Distance_{i+1}" for i in range(R)]
+#         writer.writerow(header)
+
+#         for query in test_vectors:
+#             ranked_records = recommend_company_standard(query, model, hp, R, type_of_fields, distance_function)
+#             row = [str(query)] 
+            
+#             for i in range(R):
+#                 if i < len(ranked_records):
+#                     company, distance = ranked_records[i]
+#                     row.append(company)
+#                     row.append(distance)
+#                 else:
+#                     row.append("")
+#                     row.append("")
+            
+#             writer.writerow(row)
+    
+#     print(f"Queries and recommendations have been saved to {output_file}")
+
+# except FileNotFoundError as fnf_error:
+#     print(fnf_error)
+# except Exception as e:
+#     print(f"An error occurred: {e}")

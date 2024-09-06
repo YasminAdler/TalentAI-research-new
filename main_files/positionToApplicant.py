@@ -45,11 +45,35 @@ def load_model(model_path):
     distance_function = model._distance 
     return model, hp, type_of_fields, distance_function
 
+# def load_test_vectors(test_path):
+#     if not os.path.exists(test_path):
+#         raise FileNotFoundError(f"The file {test_path} does not exist.")
+#     df = pd.read_csv(test_path, header=None)
+#     test_vectors = [row.tolist() for _, row in df.iterrows()]
+#     return test_vectors
+
+def preprocess_data(vector):
+    processed_vector = []
+    for item in vector:
+        if pd.isna(item):
+            processed_vector.append('')  # convert NaN to empty string
+        elif isinstance(item, (int, float)):
+            processed_vector.append(str(item))  # convert numerical to string
+        else:
+            processed_vector.append(item)
+    return processed_vector
+
+
 def load_test_vectors(test_path):
     if not os.path.exists(test_path):
         raise FileNotFoundError(f"The file {test_path} does not exist.")
+    
+    # Load data using pandas
     df = pd.read_csv(test_path, header=None)
-    test_vectors = [row.tolist() for _, row in df.iterrows()]
+    df = df.replace({np.nan: ''})  # Replace NaN with empty strings
+
+    # Preprocess each row to handle missing values and lists consistently
+    test_vectors = [preprocess_data(row.tolist()) for _, row in df.iterrows()]
     return test_vectors
 
 def filter_test_vectors(test_vectors, company_index, exclude_companies=["nvidia", "tesla", "tesla-motors"]):
@@ -108,6 +132,7 @@ distance_functions = {
     "Statistic_list_frequency": "Statistic_list_frequency",
     "Statistic_intersection": "Statistic_intersection"
 }
+
 company_indices = {
     "with_gender_and_age": 11,
     "gender_no_age": 10,

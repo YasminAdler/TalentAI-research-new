@@ -21,7 +21,7 @@ class Subcluster:
         self.centroid = calculator.calculate_centroid(data)
         
 class Cluster:
-    def __init__(self, cluster_id, mean, average_distance, max_distance, std_dev, attributes_average_distances, attributes_std_devs, data, calculator, _distance):
+    def __init__(self, cluster_id, mean, average_distance, max_distance, std_dev, attributes_average_distances, attributes_std_devs, data, calculator, _distance, company_index):
         self.cluster_id = cluster_id
         self.mean = mean
         self.average_distance = average_distance
@@ -32,7 +32,7 @@ class Cluster:
         self.calculator = calculator
         self.data = data
         self._distance = _distance
-        self.subclusters = self._create_subclusters()
+        self.subclusters = self._create_subclusters(company_index)
 
     def to_dict(self):
         return {
@@ -45,11 +45,8 @@ class Cluster:
             "attributes_std_devs": self.attributes_std_devs
         }
 
-    ################# BEFORE THE MODEL GENERATION change company_index to: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
-    def _create_subclusters(self):
-        company_index = 9
+    def _create_subclusters(self, company_index):
         subclusters = {}
-        
         try:
             for cluster_index, cluster in enumerate(self.data):
                 # Reset company_subclusters for each cluster to avoid mixing data between clusters

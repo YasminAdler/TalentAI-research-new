@@ -5,7 +5,6 @@
 ## Initiate dataSplitter.py
 ## uncomment the chosen distance fucntion part in statistic_regular_algo/KMeanClusterer.py
 ## Uncomment the part of distance function in  main_files/customCentroids
-## Input the matching company index in _create_subclusters() in main_files/classCluster.py 
 ## Input the company index in the chosen distance function file: (statistic_regular_algo/(Statistic_list_frequeny OR Statistic_intersection))
 ## Uncomment normalization part for chosen dataset in distance function file: (Statistic_list_frequeny / Statistic_intersection)
 ###################################################################
@@ -67,6 +66,19 @@ distance_functions = {
     "Statistic_intersection": Statistic_intersection
 }
 
+dataset_options = {
+    "with_gender_and_age": types_list,
+    "gender_no_age": types_list_gender_no_age,
+    "age_no_gender": types_list_age_no_gender,
+    "no_age_no_gender": types_list_no_age_no_gender
+}
+company_indices = {
+    "with_gender_and_age": 11,
+    "gender_no_age": 10,
+    "age_no_gender": 10,
+    "no_age_no_gender": 9
+}
+
 def process_and_cluster(full_vectors, train_vectors, dataset_option, distance_function, types_list_modified):
     save_dir = f"saved_models/{dataset_option}"
     os.makedirs(save_dir, exist_ok=True)
@@ -76,10 +88,12 @@ def process_and_cluster(full_vectors, train_vectors, dataset_option, distance_fu
         hp, k = preProcess(full_vectors, types_list_modified, distance_function, 9, 9)
 
         print("Clustering the train set...")
+        print("company_index", company_indices[dataset_option])
         model = KMeansClusterer(
             num_means=k,
             distance=distance_function,
             repeats=5,  # changed by yasmin from 5 to 2
+            company_index=company_indices[dataset_option],
             type_of_fields=types_list_modified,
             hyper_params=hp,
         )
@@ -110,20 +124,15 @@ def process_and_cluster(full_vectors, train_vectors, dataset_option, distance_fu
                 "model": model,
                 "type_of_fields": types_list_modified
             }, f)
-        
+            
         print(f"Training model and results saved to {save_path_train}")
-
+        
     except Exception as e:
         logging.error(f"Unexpected error during processing and clustering: {e}")
         print(f"An unexpected error occurred: {e}")
 
 def main():
-    dataset_options = {
-        "with_gender_and_age": types_list,
-        "gender_no_age": types_list_gender_no_age,
-        "age_no_gender": types_list_age_no_gender,
-        "no_age_no_gender": types_list_no_age_no_gender
-    }
+
 
     print("Choose a dataset option:")
     for idx, option in enumerate(dataset_options.keys()):
@@ -162,7 +171,6 @@ def main():
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             full_vectors.append(np.array(row, dtype=object))
-
     process_and_cluster(full_vectors, train_vectors, dataset_option, distance_function, types_list_modified)
 
 if __name__ == "__main__":

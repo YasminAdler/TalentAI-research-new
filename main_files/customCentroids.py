@@ -79,7 +79,7 @@ class CustomCentroidCalculator:
                     # data = voting_list
 
 
-                    ########### this version is for dot product and intersection
+                #     ########### this version is for dot product and intersection
                 #    Extract lists from the indth index of each vector
 
                     lists_at_ind_index = [ast.literal_eval(vector[ind]) for vector in cluster]

@@ -31,43 +31,26 @@ def Statistic_list_frequency(u, v, type_values, parameters):
     for i in range(len(v)):
         if(i == company_index):
             continue
+        
         if(i in columns_to_exclude): ## if in RoleToEmployee uncomment this
             continue
         
         if type_values[i] == "categoric":
             try:
-                ################################# this was changed by yasmin #################################
-                # if (u[i] and v[i]) or (u[i] != "" and v[i] != ""):
-                if pd.notna(u[i]) and pd.notna(v[i]):
+                if (u[i] != "" and v[i]!=""):
+                    # if attributes are same
                     if u[i] == v[i]:
                         results.append(0)
-                        ########### up here
-                        
-                ################################# Original handling: #################################
-                # if (u[i] != "" and v[i]!=""):
-                #     # if attributes are same
-                #     if u[i] == v[i]:
-                #         results.append(0)
-                
-                ########### up here
-
+                    # attributes are not the same - calculate max{f(|vak|), dfr(vi, ui), theta)
                     else:
                         specific_domain_size = parameters["domain sizes"][i]
                         f_v_ak = f_freq(specific_domain_size, theta1, betha, theta2, gamma)
-                        
-                        fr_u = parameters["frequencies"][str(i)].get(str(u[i]), 1)
-                        fr_v = parameters["frequencies"][str(i)].get(str(v[i]), 1)
-                        
-                        if fr_u == 0 or fr_v == 0:
-                            print(f"Warning: Zero frequency found at index {i}. fr_u: {fr_u}, fr_v: {fr_v}")
-
+                        fr_u = parameters["frequencies"][str(i)][str((u[i]))] if u[i] != "" else 1
+                        fr_v = parameters["frequencies"][str(i)][str((v[i]))] if v[i] != "" else 1
                         m_fk = parameters["minimum_freq_of_each_attribute"][str(i)]
-                        d_fr = (abs(fr_u - fr_v) + m_fk) / max(fr_u, fr_v, 1e-9)  # Avoid division by zero
-                        term = max(d_fr, theta, f_v_ak)
-                        if math.isnan(term):
-                            print(f"NaN found in categoric calculation at index {i}. d_fr: {d_fr}, theta: {theta}, f_v_ak: {f_v_ak}")
-                        results.append(abs(term))
-                        distance += pow(term, 2)
+                        d_fr = (abs(fr_u - fr_v) + m_fk) / max(fr_u, fr_v)
+                        results.append(abs(max(d_fr, theta, f_v_ak)))
+                        distance += pow(max(d_fr, theta, f_v_ak), 2)
                     
             except Exception as e:
                 print("error!!!!!", e)
@@ -81,7 +64,7 @@ def Statistic_list_frequency(u, v, type_values, parameters):
         # # Numeric Handling - with_gender_and_age
         # if type_values[i] == "numeric":
         #     try:
-        #         if pd.notna(u[i]) and pd.notna(v[i]): ###
+        #         if str(u[i]) != '' and str(v[i]) != '':
         #             # ### was changed to u[i] and v[i] and u[i] != "" and v[i] != "" 
         #             ## to do: change in all distance functions
         #             if i == 4:
@@ -105,7 +88,7 @@ def Statistic_list_frequency(u, v, type_values, parameters):
         # ## Numeric Handling - gender_no_age 
         # if type_values[i] == "numeric":
         #     try:
-        #         if pd.notna(u[i]) and pd.notna(v[i]): ## to do delete or (u[i] != "" and v[i] != "") for alllll I THINK THIS IS BECAUSE THEYRE VALUE IS 'nan'
+        #         if str(u[i]) != '' and str(v[i]) != '':
 
         #             if i == 4:
         #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
@@ -129,7 +112,7 @@ def Statistic_list_frequency(u, v, type_values, parameters):
         # # Numeric Handling - age_no_gender 
         # if type_values[i] == "numeric":
         #     try:
-        #         if pd.notna(u[i]) and pd.notna(v[i]):
+        #         if str(u[i]) != '' and str(v[i]) != '':
         #             if i == 3:
         #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
         #                 v_val = (float(v[i]) - 1913) / (1997 - 1913)
@@ -153,7 +136,7 @@ def Statistic_list_frequency(u, v, type_values, parameters):
         # Numeric Handling - no_age_no_gender
         if type_values[i] == "numeric":
             try:
-                if pd.notna(u[i]) and pd.notna(v[i]):
+                if str(u[i]) != '' and str(v[i]) != '':
                     if i == 3:
                         u_val = (float(u[i]) - 1913) / (1997 - 1913)
                         v_val = (float(v[i]) - 1913) / (1997 - 1913)
@@ -179,8 +162,9 @@ def Statistic_list_frequency(u, v, type_values, parameters):
             u_list = ast.literal_eval(u[i])
             v_list = ast.literal_eval(v[i])
 
-            u_list = sorted(u_list, key=lambda x: parameters["list_freq_dict"][i].get(x, 0), reverse=True)
-            v_list = sorted(v_list, key=lambda x: parameters["list_freq_dict"][i].get(x, 0), reverse=True)
+            # sort according to frequency descending order
+            u_list = sorted(u_list, key=lambda x: parameters["list_freq_dict"][i][x], reverse=True)
+            v_list = sorted(v_list, key=lambda x: parameters["list_freq_dict"][i][x], reverse=True)
 
 
             #  adapt according to average list length
@@ -199,24 +183,18 @@ def Statistic_list_frequency(u, v, type_values, parameters):
             specific_domain_size = len(parameters["one_hot_vector_prep"][i])
 
 
+
             try:
                 for j in range(len(u_list)):
+                    
                     if u_list[j] != "missing_val" and v_list[j] != "missing_val":
-                        
                         f_v_ak = f_freq(specific_domain_size, theta1, betha, theta2, gamma)
-                        fr_u = parameters["list_freq_dict"][i].get(u_list[j], 1)
-                        fr_v = parameters["list_freq_dict"][i].get(v_list[j], 1)
-                        
-                        if fr_u == 0 or fr_v == 0:
-                            print(f"Warning: Zero frequency in list at index {i}, position {j}. fr_u: {fr_u}, fr_v: {fr_v}")
-
+                        fr_u = parameters["list_freq_dict"][i][u_list[j]] if u_list[j] != "missing_val" else 1
+                        fr_v = parameters["list_freq_dict"][i][v_list[j]] if v_list[j] != "missing_val" else 1
                         m_fk = min(parameters["list_freq_dict"][i].values())
-                        d_fr = (abs(fr_u - fr_v) + m_fk) / max(fr_u, fr_v, 1e-9)  # Avoid division by zero
-                        term = max(d_fr, theta, f_v_ak)
-                        if math.isnan(term):
-                            print(f"NaN found in list calculation at index {i}, position {j}. d_fr: {d_fr}, theta: {theta}, f_v_ak: {f_v_ak}")
-                        results.append(abs(term))
-                        distance += pow(term, 2)
+                        d_fr = (abs(fr_u - fr_v) + m_fk) / max(fr_u, fr_v)
+                        results.append(abs(max(d_fr, theta, f_v_ak)))
+                        distance += pow(max(d_fr, theta, f_v_ak), 2)
                         
             except Exception as e:
                 print(e)
