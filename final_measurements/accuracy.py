@@ -98,53 +98,62 @@ True Negative (TN): The actual label is not Google, and the recommendation is al
 """
 
 def calculate_metrics(recommendations, actual_companies, target_company, x_values):
-    # y_pred_mid = {i: company.strip().lower() for i, company in recommendations}
-    
-    company_columns  = list(range(1, 26, 2))
+    # Define the columns for recommendations (1, 3, 5, 7, ..., 25 = 13 columns in total)
+    company_columns = list(range(1, 26, 2))  # This extracts 13 columns, skipping the numeric scores
     extracted_companies = {
-        i: [recommendations.iloc[i,col] for col in company_columns]
+        i: [recommendations.iloc[i, col] if pd.notna(recommendations.iloc[i, col]) else '' for col in company_columns]
         for i in range(len(recommendations))
     }
-
-    # for i, companies in extracted_companies.items():
-    #     print(f"Row {i}: {companies}")
-            
+    
     y_pred_mid = {i: extracted_company for i, extracted_company in extracted_companies.items()}
-    # print("y_pred_mid", y_pred_mid)
-
     y_true_mid = {i: company for i, company in enumerate(actual_companies)}
-    # print("y_true_mid", y_true_mid)
+    
     results = {}
 
+    # Loop over each x (1, 3, 5, 13) to check the first x columns
     for x in sorted(x_values):
-        
         TP = 0
         FP = 0
         FN = 0
         TN = 0
-        for i in y_true_mid:
-            
-            # True Positive and False Negative logic
-            if y_true_mid[i] == target_company:
-                print(x)
-                # print("y_pred_mid.get(i, [])[:x]:", y_pred_mid.get(i, [])[:x])
-                if target_company in y_pred_mid.get(i, [])[:x]:  
-                    TP += 1  # True Positive: correct recommendation for the target company
-                else:
-                    FN += 1  # False Negative: wrong recommendation at this index ## useless
-                    
-            # False Positive and True Negative logic
-            else: 
-                if target_company in y_pred_mid.get(i, [])[:x]: 
-                    FP += 1  # False Positive: recommended the target company when the actual was different ## useless
-                else:
-                    TN += 1  # True Negative: correctly did not recommend the target company
 
-        # accuracy = (TP + TN) / (TP + FP + FN + TN) if (TP + FP + FN + TN) != 0 else 0.0
+        # Iterate over each row (i.e., each test sample)
+        for i in y_true_mid:
+            true_company = y_true_mid[i]  # The true company for this row
+            predicted_companies = y_pred_mid.get(i, [])  # All predicted companies for this row (all 13 columns)
+
+            # Check if the target company is anywhere in the predicted companies
+            if target_company in predicted_companies:
+                # Find the position of the target company in the predictions
+                position = predicted_companies.index(target_company) + 1  # Position starts from 1
+
+                # True Positive: if the true company is the target company and it's within the first x columns
+                if true_company == target_company and position <= x:
+                    TP += 1
+                # False Positive: if the true company is NOT the target company, but the target appears within the first x columns
+                elif true_company != target_company and position <= x:
+                    FP += 1
+            else:
+                # False Negative: true company is the target company but it doesn't appear in the top x columns
+                if true_company == target_company:
+                    FN += 1
+                # True Negative: the target company is not predicted and the true company is also not the target
+                else:
+                    TN += 1
+
+        # Calculate accuracy based on the results for this value of x
         accuracy = (TP + TN) / 184
+
+        # Log for debugging
+        print(f"x={x}, TP={TP}, FP={FP}, FN={FN}, TN={TN}, Accuracy={accuracy}")
+        
+        # Store results for this value of x
         results[x] = {'Accuracy': accuracy}
 
     return results
+
+
+
 
 def run_metrics():
     dataset_variation = input("Enter the dataset variation (e.g., with_gender_and_age, gender_no_age, age_no_gender, no_age_no_gender): ")
@@ -163,10 +172,12 @@ def run_metrics():
         print(f"Test set not found for {dataset_variation}.")
         return
 
+    # Read the recommendation and test data
     recommendations = read_excel_file(recommendation_file)
     if recommendations.empty:
         print("The recommendations file is empty or could not be loaded properly.")
         return
+
     test_data = pd.read_csv(test_set)
     actual_companies = test_data.iloc[:, company_index].apply(str.lower).tolist()
     unique_companies = set(actual_companies)
@@ -195,6 +206,8 @@ def run_metrics():
     output_file = f"{output_dir}/{dataset_variation}_{algorithm}_{distance_function}_accuracy.csv"
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
+
+
 
 if __name__ == "__main__":
     try:

@@ -89,17 +89,14 @@ def read_excel_file(file_path):
         logging.error(f"Error reading {file_path}: {e}")
         print(f"Error reading {file_path}: {e}")
         return pd.DataFrame()
-    
-def calculate_precision_recall(recommendations, actual_companies, target_company):
-    y_true_mid = {i: company for i, company in enumerate(actual_companies)}  ## a dictionary of all index actual, companies
-    y_pred_mid = {i: company for i, company in enumerate(recommendations['Company_1'].str.lower())}  
-    
-    # print("y_true_mid",y_true_mid)
-    # print("y_pred_mid", y_pred_mid)
 
-    y_true = {} 
-    y_pred = {} 
-    
+def calculate_precision_recall_f1(recommendations, actual_companies, target_company):
+    y_true_mid = {i: company for i, company in enumerate(actual_companies)}  # True company for each index
+    y_pred_mid = {i: company for i, company in enumerate(recommendations['Company_1'].str.lower())}  # Predicted companies
+
+    y_true = {}
+    y_pred = {}
+
     for i in y_true_mid:
         if y_true_mid[i] == target_company:
             y_true[i] = y_true_mid[i]  # Store only if the actual company matches the target
@@ -110,21 +107,21 @@ def calculate_precision_recall(recommendations, actual_companies, target_company
 
     for i in y_true:
         if y_pred_mid.get(i, None) == target_company:
-            TP += 1  # True Positive: correct recommendation for the target company
+            TP += 1  # True Positive
         else:
-            FN += 1  # False Negative: wrong recלommendation at this index
+            FN += 1  # False Negative
 
     for i in y_pred_mid:
         if y_pred_mid[i] == target_company and y_true_mid.get(i) != target_company:
-            FP += 1  # False Positive: recommended the target company when the actual was different
+            FP += 1  # False Positive
 
     precision = TP / (TP + FP) if (TP + FP) != 0 else 0.0
     recall = TP / (TP + FN) if (TP + FN) != 0 else 0.0
-    # f1 = precision ## to complete 
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) != 0 else 0.0
 
-    return precision, recall
+    return precision, recall, f1
 
-def run_precision_recall():
+def run_precision_recall_f1():
     dataset_variation = input("Enter the dataset variation (e.g., with_gender_and_age, gender_no_age, age_no_gender, no_age_no_gender): ")
     algorithm = input("Enter the algorithm type (e.g., multiclustering, standard, position_to_applicant): ")
     distance_function = input("Enter the distance function (e.g., Statistic_intersection, Statistic_list_frequency): ")
@@ -132,7 +129,7 @@ def run_precision_recall():
     recommendation_file = recommendation_files.get(algorithm, {}).get(distance_function, {}).get(dataset_variation)
     test_set = test_sets.get(dataset_variation)
     company_index = company_indices.get(dataset_variation)
-    
+
     if not recommendation_file or not os.path.exists(recommendation_file):
         print(f"Recommendation file not found for {algorithm}, {distance_function}, {dataset_variation}.")
         return
@@ -152,9 +149,12 @@ def run_precision_recall():
     unique_companies = set(actual_companies)
 
     all_results = []
+    f1_results = []
+
     for company in unique_companies:
         print(f"Calculating for company: {company}")
-        precision, recall = calculate_precision_recall(recommendations, actual_companies, company)
+        precision, recall, f1 = calculate_precision_recall_f1(recommendations, actual_companies, company)
+
         all_results.append({
             "Algorithm": algorithm,
             "Distance Function": distance_function,
@@ -164,23 +164,33 @@ def run_precision_recall():
             "Recall": recall
         })
 
+        f1_results.append({
+            "Algorithm": algorithm,
+            "Distance Function": distance_function,
+            "Dataset Variation": dataset_variation,
+            "Company": company,
+            "F1 Score": f1
+        })
+
+    # Save Precision and Recall results
     results_df = pd.DataFrame(all_results)
     print(results_df)
-
-    average_precision = results_df["Precision"].mean()
-    average_recall = results_df["Recall"].mean()
-    print(f"\nAverage Precision: {average_precision}")
-    print(f"Average Recall: {average_recall}")
-
+    
     output_dir = "final_measurements"
-    os.makedirs(output_dir, exist_ok=True)  # Create the folder if it doesn't exist
-    output_file = f"{output_dir}/{dataset_variation}_{algorithm}_{distance_function}_precision&recall.csv"
+    os.makedirs(output_dir, exist_ok=True)  # Create folder if it doesn't exist
+    output_file = f"{output_dir}/{dataset_variation}_{algorithm}_{distance_function}_precision_recall.csv"
     results_df.to_csv(output_file, index=False)
-    print(f"Results saved to {output_file}")
+    print(f"Precision and Recall results saved to {output_file}")
+
+    # Save F1 Score results
+    f1_df = pd.DataFrame(f1_results)
+    f1_output_file = f"{output_dir}/{dataset_variation}_{algorithm}_{distance_function}_f1_score.csv"
+    f1_df.to_csv(f1_output_file, index=False)
+    print(f"F1 Score results saved to {f1_output_file}")
 
 if __name__ == "__main__":
     try:
-        run_precision_recall()
+        run_precision_recall_f1()
     except Exception as e:
-        logging.error(f"Error running precision and recall calculations: {e}")
-        print(f"Error running precision and recall calculations: {e}")
+        logging.error(f"Error running precision, recall, and F1 calculations: {e}")
+        print(f"Error running precision, recall, and F1 calculations: {e}")
