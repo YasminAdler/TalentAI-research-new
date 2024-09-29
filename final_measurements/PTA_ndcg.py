@@ -24,40 +24,26 @@ test_sets = {
 }
 
 recommendation_files = {
-    "multiclustering": {
+    "position_to_applicant": {
         "Statistic_intersection": {
-            "with_gender_and_age": "results/with_gender_and_age/Statistic_intersection_multiclustering_recommendations.xlsx",
-            "gender_no_age": "results/gender_no_age/Statistic_intersection_multiclustering_recommendations.xlsx",
-            "age_no_gender": "results/age_no_gender/Statistic_intersection_multiclustering_recommendations.xlsx",
-            "no_age_no_gender": "results/no_age_no_gender/Statistic_intersection_multiclustering_recommendations.xlsx"
+            "with_gender_and_age": "results/position_to_applicant/with_gender_and_age_Statistic_intersection_recommendations.xlsx",
+            "gender_no_age": "results/position_to_applicant/gender_no_age_Statistic_intersection_recommendations.xlsx",
+            "age_no_gender": "results/position_to_applicant/age_no_gender_Statistic_intersection_recommendations.xlsx",
+            "no_age_no_gender": "results/position_to_applicant/no_age_no_gender_Statistic_intersection_recommendations.xlsx"
         },
         "Statistic_list_frequency": {
-            "with_gender_and_age": "results/with_gender_and_age/Statistic_list_frequency_multiclustering_recommendations.xlsx",
-            "gender_no_age": "results/gender_no_age/Statistic_list_frequency_multiclustering_recommendations.xlsx",
-            "age_no_gender": "results/age_no_gender/Statistic_list_frequency_multiclustering_recommendations.xlsx",
-            "no_age_no_gender": "results/no_age_no_gender/Statistic_list_frequency_multiclustering_recommendations.xlsx"
-        }
-    },
-    "standard": {
-        "Statistic_intersection": {
-            "with_gender_and_age": "results/with_gender_and_age/Statistic_intersection_standard_recommendations.xlsx",
-            "gender_no_age": "results/gender_no_age/Statistic_intersection_standard_recommendations.xlsx",
-            "age_no_gender": "results/age_no_gender/Statistic_intersection_standard_recommendations.xlsx",
-            "no_age_no_gender": "results/no_age_no_gender/Statistic_intersection_standard_recommendations.xlsx"
-        },
-        "Statistic_list_frequency": {
-            "with_gender_and_age": "results/with_gender_and_age/Statistic_list_frequency_standard_recommendations.xlsx",
-            "gender_no_age": "results/gender_no_age/Statistic_list_frequency_standard_recommendations.xlsx",
-            "age_no_gender": "results/age_no_gender/Statistic_list_frequency_standard_recommendations.xlsx",
-            "no_age_no_gender": "results/no_age_no_gender/Statistic_list_frequency_standard_recommendations.xlsx"
+            "with_gender_and_age": "results/position_to_applicant/with_gender_and_age_Statistic_list_frequency_recommendations.xlsx",
+            "gender_no_age": "results/position_to_applicant/gender_no_age_Statistic_list_frequency_recommendations.xlsx",
+            "age_no_gender": "results/position_to_applicant/age_no_gender_Statistic_list_frequency_recommendations.xlsx",
+            "no_age_no_gender": "results/position_to_applicant/no_age_no_gender_Statistic_list_frequency_recommendations.xlsx"
         }
     }
 }
 
 """
 Defenitions: 
-i: Represents the position (1 to 13) where the recommended company matched the actual company.
-𝑝 = 13 : The number of possible ranking positions
+i: Represents the position (1 to 11) where the recommended company matched the actual company.
+𝑝 = 11 : The number of possible ranking positions
 rel: Is binary (0 or 1), indicating whether there was a match
 
 dcg = 1/log_2(i+1)
@@ -74,6 +60,7 @@ def read_excel_file(file_path):
         logging.error(f"Error reading {file_path}: {e}")
         print(f"Error reading {file_path}: {e}")
         return pd.DataFrame()
+
 
 def calculate_ndcg_for_company(recommendations, actual_companies, target_company):    
     ndcg_scores = []

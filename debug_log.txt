@@ -2147,3 +2147,10 @@
 2024-09-12 11:53:20,512:ERROR:Error running metrics calculations: len() takes exactly one argument (0 given)
 2024-09-12 11:56:34,363:ERROR:Error running metrics calculations: len() takes exactly one argument (0 given)
 2024-09-12 11:57:09,657:ERROR:Error running metrics calculations: len() takes exactly one argument (0 given)
+2024-09-28 12:06:55,872:ERROR:Error running NDCG calculations: single positional indexer is out-of-bounds
+2024-09-28 12:08:03,483:ERROR:Error running NDCG calculations: single positional indexer is out-of-bounds
+2024-09-28 12:08:46,297:ERROR:Error running NDCG calculations: single positional indexer is out-of-bounds
+2024-09-28 12:10:49,290:ERROR:Error running NDCG calculations: single positional indexer is out-of-bounds
+2024-09-28 12:14:06,903:ERROR:Error running NDCG calculations: single positional indexer is out-of-bounds
+2024-09-29 08:41:36,588:ERROR:Error running metrics calculations: index 23 is out of bounds for axis 0 with size 23
+2024-09-29 09:06:43,822:ERROR:Error running accuracy calculations: Invalid number of applicants. Choose 1, 3, 5, or 11.
