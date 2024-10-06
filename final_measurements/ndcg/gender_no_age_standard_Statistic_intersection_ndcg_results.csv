@@ -1,0 +1,14 @@
+Algorithm,Distance Function,Dataset Variation,Company,Average NDCG
+standard,Statistic_intersection,gender_no_age,facebook,1.0731997692959108
+standard,Statistic_intersection,gender_no_age,tesla,1.132557052301572
+standard,Statistic_intersection,gender_no_age,apple,0.5281766399301124
+standard,Statistic_intersection,gender_no_age,oracle,0.49715300720379574
+standard,Statistic_intersection,gender_no_age,salesforce,0.8248522007943864
+standard,Statistic_intersection,gender_no_age,nvidia,0.2103099178571525
+standard,Statistic_intersection,gender_no_age,google,0.9031402567795516
+standard,Statistic_intersection,gender_no_age,amazon,1.0745976316975245
+standard,Statistic_intersection,gender_no_age,microsoft,0.5779535380845358
+standard,Statistic_intersection,gender_no_age,ibm,1.6590996858772464
+standard,Statistic_intersection,gender_no_age,uber,0.3644177619229719
+standard,Statistic_intersection,gender_no_age,adobe,0.9841773495648299
+standard,Statistic_intersection,gender_no_age,twitter,0.3584686749350814

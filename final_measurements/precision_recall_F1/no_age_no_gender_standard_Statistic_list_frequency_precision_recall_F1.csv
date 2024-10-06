@@ -1,0 +1,14 @@
+Algorithm,Distance Function,Dataset Variation,Target Company,TP,FP,TN,FN,Precision,Recall,F1 Score
+standard,Statistic_list_frequency,no_age_no_gender,apple,5,13,152,13,0.2777777777777778,0.2777777777777778,0.2777777777777778
+standard,Statistic_list_frequency,no_age_no_gender,salesforce,1,2,173,7,0.3333333333333333,0.125,0.18181818181818182
+standard,Statistic_list_frequency,no_age_no_gender,ibm,12,32,128,11,0.2727272727272727,0.5217391304347826,0.3582089552238806
+standard,Statistic_list_frequency,no_age_no_gender,amazon,1,8,158,16,0.1111111111111111,0.058823529411764705,0.07692307692307691
+standard,Statistic_list_frequency,no_age_no_gender,microsoft,2,17,146,18,0.10526315789473684,0.1,0.10256410256410256
+standard,Statistic_list_frequency,no_age_no_gender,adobe,2,8,157,16,0.2,0.1111111111111111,0.14285714285714285
+standard,Statistic_list_frequency,no_age_no_gender,twitter,3,6,166,8,0.3333333333333333,0.2727272727272727,0.3
+standard,Statistic_list_frequency,no_age_no_gender,uber,3,8,168,4,0.2727272727272727,0.42857142857142855,0.33333333333333326
+standard,Statistic_list_frequency,no_age_no_gender,google,10,14,146,13,0.4166666666666667,0.43478260869565216,0.425531914893617
+standard,Statistic_list_frequency,no_age_no_gender,oracle,4,11,155,13,0.26666666666666666,0.23529411764705882,0.25
+standard,Statistic_list_frequency,no_age_no_gender,facebook,1,18,150,14,0.05263157894736842,0.06666666666666667,0.058823529411764705
+standard,Statistic_list_frequency,no_age_no_gender,tesla,1,1,179,2,0.5,0.3333333333333333,0.4
+standard,Statistic_list_frequency,no_age_no_gender,nvidia,0,0,180,3,0.0,0.0,0.0

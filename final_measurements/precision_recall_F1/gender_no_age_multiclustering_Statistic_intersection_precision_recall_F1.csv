@@ -1,0 +1,14 @@
+Algorithm,Distance Function,Dataset Variation,Target Company,TP,FP,TN,FN,Precision,Recall,F1 Score
+multiclustering,Statistic_intersection,gender_no_age,apple,0,1,164,18,0.0,0.0,0.0
+multiclustering,Statistic_intersection,gender_no_age,salesforce,1,0,175,7,1.0,0.125,0.2222222222222222
+multiclustering,Statistic_intersection,gender_no_age,ibm,6,28,132,17,0.17647058823529413,0.2608695652173913,0.2105263157894737
+multiclustering,Statistic_intersection,gender_no_age,amazon,0,1,165,17,0.0,0.0,0.0
+multiclustering,Statistic_intersection,gender_no_age,microsoft,6,39,124,14,0.13333333333333333,0.3,0.18461538461538463
+multiclustering,Statistic_intersection,gender_no_age,adobe,0,0,165,18,0.0,0.0,0.0
+multiclustering,Statistic_intersection,gender_no_age,twitter,0,3,169,11,0.0,0.0,0.0
+multiclustering,Statistic_intersection,gender_no_age,uber,1,1,175,6,0.5,0.14285714285714285,0.22222222222222224
+multiclustering,Statistic_intersection,gender_no_age,google,4,11,149,19,0.26666666666666666,0.17391304347826086,0.2105263157894737
+multiclustering,Statistic_intersection,gender_no_age,oracle,1,6,160,16,0.14285714285714285,0.058823529411764705,0.08333333333333333
+multiclustering,Statistic_intersection,gender_no_age,facebook,0,5,163,15,0.0,0.0,0.0
+multiclustering,Statistic_intersection,gender_no_age,tesla,2,67,113,1,0.028985507246376812,0.6666666666666666,0.05555555555555555
+multiclustering,Statistic_intersection,gender_no_age,nvidia,0,0,180,3,0.0,0.0,0.0

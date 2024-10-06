@@ -1,0 +1,14 @@
+Algorithm,Distance Function,Dataset Variation,Target Company,TP,FP,TN,FN,Precision,Recall,F1 Score
+standard,Statistic_intersection,gender_no_age,apple,3,9,156,15,0.25,0.16666666666666666,0.2
+standard,Statistic_intersection,gender_no_age,salesforce,1,8,167,7,0.1111111111111111,0.125,0.11764705882352941
+standard,Statistic_intersection,gender_no_age,ibm,12,22,138,11,0.35294117647058826,0.5217391304347826,0.4210526315789474
+standard,Statistic_intersection,gender_no_age,amazon,3,16,150,14,0.15789473684210525,0.17647058823529413,0.16666666666666669
+standard,Statistic_intersection,gender_no_age,microsoft,1,24,139,19,0.04,0.05,0.044444444444444446
+standard,Statistic_intersection,gender_no_age,adobe,5,18,147,13,0.21739130434782608,0.2777777777777778,0.24390243902439024
+standard,Statistic_intersection,gender_no_age,twitter,1,14,158,10,0.06666666666666667,0.09090909090909091,0.07692307692307691
+standard,Statistic_intersection,gender_no_age,uber,1,1,175,6,0.5,0.14285714285714285,0.22222222222222224
+standard,Statistic_intersection,gender_no_age,google,6,13,147,17,0.3157894736842105,0.2608695652173913,0.28571428571428575
+standard,Statistic_intersection,gender_no_age,oracle,2,0,166,15,1.0,0.11764705882352941,0.21052631578947367
+standard,Statistic_intersection,gender_no_age,facebook,3,19,149,12,0.13636363636363635,0.2,0.16216216216216214
+standard,Statistic_intersection,gender_no_age,tesla,1,0,180,2,1.0,0.3333333333333333,0.5
+standard,Statistic_intersection,gender_no_age,nvidia,0,0,180,3,0.0,0.0,0.0

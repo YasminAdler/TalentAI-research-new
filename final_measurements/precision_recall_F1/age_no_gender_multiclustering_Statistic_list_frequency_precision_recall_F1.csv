@@ -1,0 +1,14 @@
+Algorithm,Distance Function,Dataset Variation,Target Company,TP,FP,TN,FN,Precision,Recall,F1 Score
+multiclustering,Statistic_list_frequency,age_no_gender,tesla-motors,1,6,174,2,0.14285714285714285,0.3333333333333333,0.2
+multiclustering,Statistic_list_frequency,age_no_gender,apple,0,2,163,18,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,salesforce,2,15,160,6,0.11764705882352941,0.25,0.15999999999999998
+multiclustering,Statistic_list_frequency,age_no_gender,ibm,3,5,155,20,0.375,0.13043478260869565,0.19354838709677416
+multiclustering,Statistic_list_frequency,age_no_gender,amazon,4,2,164,13,0.6666666666666666,0.23529411764705882,0.3478260869565218
+multiclustering,Statistic_list_frequency,age_no_gender,microsoft,0,0,163,20,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,adobe,0,5,160,18,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,nvidia,0,2,178,3,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,twitter,0,4,168,11,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,google,0,4,156,23,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,oracle,0,4,162,17,0.0,0.0,0.0
+multiclustering,Statistic_list_frequency,age_no_gender,facebook,1,1,167,14,0.5,0.06666666666666667,0.11764705882352941
+multiclustering,Statistic_list_frequency,age_no_gender,uber-com,5,117,59,2,0.040983606557377046,0.7142857142857143,0.07751937984496123

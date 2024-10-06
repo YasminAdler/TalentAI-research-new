@@ -1,0 +1,14 @@
+Dataset Variation,Distance Function,Target Company,TP,FP,TN,FN,Precision,Recall,F1 Score
+no_age_no_gender,Statistic_list_frequency,microsoft,0,4,40,9,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,twitter,0,5,44,4,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,facebook,0,8,44,1,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,apple,0,3,44,6,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,tesla,0,0,52,1,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,google,1,5,40,7,0.16666666666666666,0.125,0.14285714285714288
+no_age_no_gender,Statistic_list_frequency,salesforce,0,0,52,1,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,amazon,0,6,44,3,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,uber,0,0,50,3,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,adobe,1,9,40,3,0.1,0.25,0.14285714285714288
+no_age_no_gender,Statistic_list_frequency,oracle,1,1,49,2,0.5,0.3333333333333333,0.4
+no_age_no_gender,Statistic_list_frequency,nvidia,0,0,51,2,0.0,0.0,0.0
+no_age_no_gender,Statistic_list_frequency,ibm,3,6,39,5,0.3333333333333333,0.375,0.35294117647058826

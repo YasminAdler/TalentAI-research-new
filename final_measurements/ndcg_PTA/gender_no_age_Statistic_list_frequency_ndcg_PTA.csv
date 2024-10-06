@@ -1,0 +1,14 @@
+Dataset Variation,Distance Function,Target Company,Average NDCG
+gender_no_age,Statistic_list_frequency,tesla,0.0
+gender_no_age,Statistic_list_frequency,twitter,0.06973573641278247
+gender_no_age,Statistic_list_frequency,uber,0.12355523013377286
+gender_no_age,Statistic_list_frequency,google,0.47322765215551293
+gender_no_age,Statistic_list_frequency,adobe,0.7403386128155653
+gender_no_age,Statistic_list_frequency,oracle,0.0
+gender_no_age,Statistic_list_frequency,amazon,0.5183616301163382
+gender_no_age,Statistic_list_frequency,facebook,0.6934264036172708
+gender_no_age,Statistic_list_frequency,apple,0.3304074619203936
+gender_no_age,Statistic_list_frequency,salesforce,0.0
+gender_no_age,Statistic_list_frequency,nvidia,0.0
+gender_no_age,Statistic_list_frequency,ibm,0.2716003581113625
+gender_no_age,Statistic_list_frequency,microsoft,0.35821971980994916
