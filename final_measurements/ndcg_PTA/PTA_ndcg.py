@@ -103,9 +103,7 @@ def calculate_ndcg_for_company(recommendations, test_set, target_company, compan
     average_ndcg = sum(ndcg_scores) / len(ndcg_scores) if ndcg_scores else 0.0
     return average_ndcg
 
-# Function to run nDCG calculations for all combinations and save to individual files
 def run_ndcg_for_all_combinations():
-    # Define possible dataset variations and distance functions
     dataset_variations = ["with_gender_and_age", "gender_no_age", "age_no_gender", "no_age_no_gender"]
     distance_functions = ["Statistic_intersection", "Statistic_list_frequency"]
 
