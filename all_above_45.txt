@@ -1,0 +1,144 @@
+Stefan Klocek
+David Racz
+Kevin Smilak
+Joshua Mooney
+Elliot Tally
+Michael Head
+Jared Oberhaus
+Chris Ramsdale
+Erik Beans
+Anatoly Karp
+Brian Boarini
+Sean Laurent
+Matt Ginzton
+Rick Bianchi
+Nick Siderakis
+Trevor Strohman
+Joseph Dean
+Vincent Johnson
+Steve Jones
+Marshal Villarosa
+Mandar Parikh
+Rob Zulandi
+Megan Mackh
+John McMullin
+Greg Tate
+Jason Fiala
+Manuel Jasso
+Mike Engel
+Robb Louder
+Mitch Christensen
+Jeff Kinzer
+Ryan Lamore
+Joe Latone
+Owen Leonard
+Gary Crupi
+Gurmeet Arora
+Amol Jadhav
+Rishi Chopra
+Jeffrey Hanley
+Patrick McCarron
+Paul Ditucci
+David Solt
+Brad Behle
+Martha Crisson
+Hunny Kershaw
+Brian Berry
+Mahesh Gunukula
+Daniel Moshief
+Christie Lau
+Valerie Gould
+Tran Lam
+Susan Poer
+Adrian Vrouwenvelder
+Steven Linehan
+Dave Knipp
+Kristen McIntyre
+Yong Kim
+Katy Burns
+Sandeep Tamhankar
+Yanjun Huang
+Sam Mikes
+Dave Rahardja
+Marian Cacciatore
+Brian Temple
+Antonio Cancio
+Karl Schramm
+Ryan Ford
+Farzin Aghdasi
+Andy Bates
+Barak Bejerano
+Alex Kozlov
+Piyush Modi
+Tanya Sweeney
+Brent Halsey
+Andrew Peterson
+Faraz Romani
+Bryan Tower
+Jon Galloway
+Drew Slothower
+Luis Hernandez
+Duane Bourgeois
+Marcus Martin
+Harrison Magun
+Joseph Steiner
+Saeed Kaley
+Kapil Tundwal
+Greg Lindsay
+Carl Schweitzer
+Jim Federico
+Joel Fernandez
+Erik Rainey
+Shashank Likhite
+Sergio Zamora
+Jim Flanagan
+Peter Urda
+Rami Awad
+Randell Rivadeneira
+Miriam Newton
+Shaun Jackson
+George Mitchell
+Malcolm Jones
+Mike Maffeo
+Stuart Wong
+Eric Piziali
+Ashish Mohindroo
+Karthik Kothandaraman
+Jonathan Fu
+Manar Aljaber
+Rob Dolin
+Erin Finnegan
+Mark Little
+Medi Goker
+Todd Saiki
+Sandeep Konchady
+Dan Gobbelet
+Ed McKnight
+Nigel Jacobs
+John Conlin
+Nancy Cheung
+Carl Meilahn
+Neil Shea
+Debbie Vanni
+Michael Lucero
+Louis Croce
+Alex Hopmann
+Amit Mookerjee
+Eduardo Roman
+Manish Khettry
+
+
+
+
+
+
+
+
+
+
+
+
+
+can you look in column index 4 and see if its below 1979 if it is give me the name and year
+
+

@@ -5,7 +5,8 @@ import pandas as pd
 
 ################# change company_index to: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
 def Statistic_intersection(u, v, type_values, parameters):
-    company_index=9
+    
+    company_index=10
     columns_to_exclude=[0,1,2]
     
     
@@ -46,7 +47,6 @@ def Statistic_intersection(u, v, type_values, parameters):
             continue
         # catrgorical handle
         if type_values[i] == "categoric":
-            
             try:
                 if (u[i] != "" and v[i]!=""):
                     if u[i] == v[i]:
@@ -74,7 +74,7 @@ def Statistic_intersection(u, v, type_values, parameters):
                 print("i is", i)
                 print("type values is", type_values, len(type_values))
 
-         # Numeric Handling - with_gender_and_age
+        # #  Numeric Handling - with_gender_and_age
         # if type_values[i] == "numeric":
         #     try:
         #         if str(u[i]) != '' and str(v[i]) != '':

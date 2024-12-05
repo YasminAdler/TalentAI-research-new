@@ -5,7 +5,7 @@ import pandas as pd
 
 ################# change company_index to: with_gender_and_age = 11 / gender_no_age = 10 / age_no_gender = 10 / no_age_no_gender = 9 #################
 def Statistic_list_frequency(u, v, type_values, parameters):
-    company_index = 9
+    company_index = 10
 
     columns_to_exclude = [0, 1, 2]
     
@@ -85,29 +85,29 @@ def Statistic_list_frequency(u, v, type_values, parameters):
         #         # print("u[i]", u[i]) 
         #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
     
-        # ## Numeric Handling - gender_no_age 
-        # if type_values[i] == "numeric":
-        #     try:
-        #         if str(u[i]) != '' and str(v[i]) != '':
+        ## Numeric Handling - gender_no_age 
+        if type_values[i] == "numeric":
+            try:
+                if str(u[i]) != '' and str(v[i]) != '':
 
-        #             if i == 4:
-        #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
-        #                 v_val = (float(v[i]) - 1913) / (1997 - 1913)
+                    if i == 4:
+                        u_val = (float(u[i]) - 1913) / (1997 - 1913)
+                        v_val = (float(v[i]) - 1913) / (1997 - 1913)
 
-        #             if i == 17:
-        #                 u_val = (float(u[i]) - 1666) / (2020 - 1666)
-        #                 v_val = (float(v[i]) - 1666) / (2020 - 1666)
+                    if i == 17:
+                        u_val = (float(u[i]) - 1666) / (2020 - 1666)
+                        v_val = (float(v[i]) - 1666) / (2020 - 1666)
 
-        #             if i == 32:
-        #                 v_val = (float(v[i]) - 3.11) / (5 - 3.11)
-        #                 u_val = (float(u[i]) - 3.11) / (5 - 3.11)
+                    if i == 32:
+                        v_val = (float(v[i]) - 3.11) / (5 - 3.11)
+                        u_val = (float(u[i]) - 3.11) / (5 - 3.11)
                         
-        #                 val = (u_val - v_val) ** 2
-        #                 distance += val 
-        #     except Exception as e:
-        #         distance +=0    
-        #         # print("u[i]", u[i]) 
-        #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u         
+                        val = (u_val - v_val) ** 2
+                        distance += val 
+            except Exception as e:
+                distance +=0    
+                # print("u[i]", u[i]) 
+                # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u         
                 
         # # Numeric Handling - age_no_gender 
         # if type_values[i] == "numeric":
@@ -133,28 +133,28 @@ def Statistic_list_frequency(u, v, type_values, parameters):
         #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
                 
 
-        # Numeric Handling - no_age_no_gender
-        if type_values[i] == "numeric":
-            try:
-                if str(u[i]) != '' and str(v[i]) != '':
-                    if i == 3:
-                        u_val = (float(u[i]) - 1913) / (1997 - 1913)
-                        v_val = (float(v[i]) - 1913) / (1997 - 1913)
+        # # Numeric Handling - no_age_no_gender
+        # if type_values[i] == "numeric":
+        #     try:
+        #         if str(u[i]) != '' and str(v[i]) != '':
+        #             if i == 3:
+        #                 u_val = (float(u[i]) - 1913) / (1997 - 1913)
+        #                 v_val = (float(v[i]) - 1913) / (1997 - 1913)
 
-                    if i == 16:
-                        u_val = (float(u[i]) - 1666) / (2020 - 1666)
-                        v_val = (float(v[i]) - 1666) / (2020 - 1666)
+        #             if i == 16:
+        #                 u_val = (float(u[i]) - 1666) / (2020 - 1666)
+        #                 v_val = (float(v[i]) - 1666) / (2020 - 1666)
 
-                    if i == 31:
-                        v_val = (float(v[i]) - 3.11) / (5 - 3.11)
-                        u_val = (float(u[i]) - 3.11) / (5 - 3.11)    
+        #             if i == 31:
+        #                 v_val = (float(v[i]) - 3.11) / (5 - 3.11)
+        #                 u_val = (float(u[i]) - 3.11) / (5 - 3.11)    
                         
-                    val = (u_val - v_val) ** 2
-                    distance += val 
-            except Exception as e:
-                distance +=0    
-                # print("u[i]", u[i]) 
-                # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
+        #             val = (u_val - v_val) ** 2
+        #             distance += val 
+        #     except Exception as e:
+        #         distance +=0    
+        #         # print("u[i]", u[i]) 
+        #         # print("v[i]", v[i]) // This showed that a lot of values are actually nan, for v and u     
 
         if type_values[i] == "list":
             ####list frequency

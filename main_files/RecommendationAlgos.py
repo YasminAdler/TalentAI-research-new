@@ -2,7 +2,7 @@
 ## this must be initiated only after the creation of the model using models_generator.py
 ## the distance function and dataset option must be identical in both model generator and this recommendation algorithm
 ## Uncomment the "columns to exclude" if statment in the choser distance function
-## Uncomment normalization according to the dataset you have chosen in Statistic_list_frequeny / Statistic_intersection
+## Uncomment the correct normalization section according to the dataset you have chosen in Statistic_list_frequeny / Statistic_intersection
 ## Uncomment in the section below the recommendation algorithm you want to initiate: Standard / Multiclustering
 ##################################################################
 
@@ -13,10 +13,6 @@ import pickle
 import numpy as np
 import pandas as pd
 import logging
-    
-import pandas as pd
-import numpy as np
-import ast
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,6 +23,7 @@ logging.basicConfig(filename='debug_log.txt', level=logging.DEBUG, format='%(asc
 from statistic_regular_algo.Statistic_list_frequency import Statistic_list_frequency
 from statistic_regular_algo.Statistic_intersection import Statistic_intersection
 
+clusters_ids = []
  
 class CustomUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
@@ -115,7 +112,8 @@ def find_nearest_cluster(query, model, hp, type_of_fields, distance_function):
             min_distance = distance
             closest_cluster = cluster
             closest_cluster_mean = cluster_mean
-    # print(closest_cluster)
+            
+    clusters_ids.append(closest_cluster.cluster_id)            
     return closest_cluster
 
 def rank_nearest_subcluster(query, nearest_cluster, model, hp, type_of_fields, distance_function):
@@ -234,6 +232,8 @@ R=13
 
 ####### Uncomment this to use the multiclustering recommendation algorithm
 try:
+    print("multiclustering recommendation algorithm")
+    
     model, hp, type_of_fields = load_model(model_path)
     test_vectors = load_test_vectors(test_path)
 
@@ -258,7 +258,7 @@ try:
                 row.append(distance)
             writer.writerow(row)
     print(f"Queries and recommendations have been saved to {output_file}")
-
+    print("Clusters ids", clusters_ids)
 except FileNotFoundError as fnf_error:
     print(fnf_error)
 except Exception as e:
@@ -267,6 +267,8 @@ except Exception as e:
 
 # # ######### Uncomment this to use the standard recommendation algorithm
 # try:
+    
+#     print("Standard recommendation algorithm")
 #     model, hp, type_of_fields = load_model(model_path)
 #     test_vectors = load_test_vectors(test_path)
     
@@ -300,6 +302,7 @@ except Exception as e:
 #             writer.writerow(row)
     
 #     print(f"Queries and recommendations have been saved to {output_file}")
+#     print("Clusters ids", clusters_ids)
 
 # except FileNotFoundError as fnf_error:
 #     print(fnf_error)

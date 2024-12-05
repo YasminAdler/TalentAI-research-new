@@ -130,10 +130,10 @@ def process_and_cluster(full_vectors, train_vectors, dataset_option, distance_fu
     except Exception as e:
         logging.error(f"Unexpected error during processing and clustering: {e}")
         print(f"An unexpected error occurred: {e}")
+        
+
 
 def main():
-
-
     print("Choose a dataset option:")
     for idx, option in enumerate(dataset_options.keys()):
         print(f"{idx + 1}. {option}")

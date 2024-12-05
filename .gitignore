@@ -1,0 +1,4 @@
+.venv
+*.pyc
+debug_log.txt
+
