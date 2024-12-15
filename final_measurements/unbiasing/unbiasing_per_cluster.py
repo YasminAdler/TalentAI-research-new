@@ -89,7 +89,7 @@ for _, row in recommendations.iterrows():
     nearest_cluster = find_nearest_cluster(query_name)
     
     # Collect data for all companies
-    companies = ['Adobe', 'Amazon', 'Apple', 'Facebook', 'Google', 'IBM', 
+    companies = ['Amazon', 'Amazon', 'Apple', 'Facebook', 'Google', 'IBM', 
                  'Microsoft', 'Nvidia', 'Oracle', 'Salesforce', 'Tesla', 
                  'Twitter', 'Uber']
     record = {
