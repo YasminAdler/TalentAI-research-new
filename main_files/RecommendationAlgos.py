@@ -70,24 +70,8 @@ def load_model(model_path):
     model = model_data["model"]
     hp = model_data["hp"]
     type_of_fields=model_data["type_of_fields"]
-    # print("HP:", hp)
-
-    # if not model.all_clusters:
-    #     raise ValueError("No clusters found in the loaded model.")
-    # for cluster in model.all_clusters:
-    #     # print("cluster.data",cluster.data)
-    #     if cluster.subclusters is None or not cluster.subclusters:
-    #         raise ValueError(f"Subclusters missing or not initialized for cluster {cluster.cluster_id}.")
     return model, hp, type_of_fields
 
-# def load_test_vectors(test_path):
-#     if not os.path.exists(test_path):
-#         raise FileNotFoundError(f"The file {test_path} does not exist.")
-    
-#     df = pd.read_csv(test_path, header=None)
-#     test_vectors = [row.tolist() for _, row in df.iterrows()]
-        
-#     return test_vectors
 
 def find_nearest_cluster(query, model, hp, type_of_fields, distance_function):
     min_distance = float('inf')

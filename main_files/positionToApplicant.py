@@ -45,13 +45,6 @@ def load_model(model_path):
     distance_function = model._distance 
     return model, hp, type_of_fields, distance_function
 
-# def load_test_vectors(test_path):
-#     if not os.path.exists(test_path):
-#         raise FileNotFoundError(f"The file {test_path} does not exist.")
-#     df = pd.read_csv(test_path, header=None)
-#     test_vectors = [row.tolist() for _, row in df.iterrows()]
-#     return test_vectors
-
 def preprocess_data(vector):
     processed_vector = []
     for item in vector:
