@@ -1,0 +1,3 @@
+Algorithm,Count,Average Records,Average Rank,Median Rank,Correlation (Records vs Rank)
+Multiclustering,184,5.7228260869565215,5.809782608695652,6.0,0.03342943885004829
+Standard,84,6.321428571428571,5.214285714285714,4.0,0.223997523497353
